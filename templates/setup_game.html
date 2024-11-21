@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Farkle Game Setup</title>
+    
+</head>
+<body>
+    <h1>Farkle Game Setup</h1>
+
+    {% if error %}
+        <p style="color:red">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('setup') }}">
+        <label for="player_name">Enter player name (or leave blank to start the game):</label><br>
+        <input type="text" name="player_name" placeholder="Player name" value="">
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if players %}
+        <h3>Players Entered:</h3>
+        <ul>
+            {% for player in players %}
+                <li>{{ player }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

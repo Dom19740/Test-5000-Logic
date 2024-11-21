@@ -83,6 +83,7 @@ def play_game(players, scores, faults, zeros):
                 continue  # Skip to the next loop iteration (next player's turn)
             else:
                 print(f"Fault recorded for {player}. Total faults: {faults[player]}.")
+                
         elif score_input == "0":
             zeros[player] += 1
             if zeros[player] == 3:

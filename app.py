@@ -64,10 +64,15 @@ def game():
                 # Add a message for fault warning
                 message = (f"\n⚠️  Fault Warning: {player} has 3 faults! Moving to next player.")
                 messages.append(message)
-                flash(message)
+                
 
                 faults[player] = 0  # Reset after 3 faults
                 return redirect(url_for('next_turn'))
+            else:
+                player_index = (player_index + 1) % len(players)
+                messages.append('same player')
+                return redirect(url_for('next_turn'))
+
 
         # Handle "0" for zero points
         elif score_input == "0":
@@ -75,7 +80,7 @@ def game():
             if zeros[player] == 3:
                 message = (f"\n⚠️  Zero Penalty: {player} loses their last score.")
                 messages.append(message)
-                flash(message)
+                
 
                 if scores[player]:
                     removed_score = scores[player].pop()  # Remove last score if 3 zeros
@@ -98,7 +103,7 @@ def game():
                             scores[other_player].remove(new_total)  # Remove the exact match
                             message = (f"\n⚠️  {new_total} is already a total for {other_player}, removing their score!")
                             messages.append(message)
-                            flash(message)
+                            
                             
                             break  # Exit the loop once the total is found and reverted
 
@@ -137,37 +142,48 @@ def reset():
     game_started = False
     return redirect(url_for('index'))
 
+
 def generate_table(players, scores, faults, zeros):
     # Find the maximum number of rounds (by the longest score list of any player)
     max_rounds = max(len(score) for score in scores.values()) if scores else 0
 
-    # Start building the table
-    table = [["Name"] + players]  # Header row with player names
+    # Build the table header
+    table_html = '<table class="table table-bordered table-hover text-center">'
+    table_html += '<thead class="table-dark">'
+    table_html += '<tr><th>Name</th>'
+    for player in players:
+        table_html += f'<th>{player}</th>'
+    table_html += '</tr></thead>'
 
-    # Generate rows for each round
+    # Add rows for each round
+    table_html += '<tbody>'
     for round_index in range(max_rounds):
-        row = [f"Total {round_index + 1}"]  # Row for this round
+        table_html += f'<tr><th>Total {round_index + 1}</th>'
         for player in players:
-            score_for_round = scores[player][round_index] if round_index < len(scores[player]) else " "
-            row.append(score_for_round)
-        table.append(row)
+            score_for_round = scores[player][round_index] if round_index < len(scores[player]) else ""
+            table_html += f'<td>{score_for_round}</td>'
+        table_html += '</tr>'
 
     # Add a blank row for spacing between scores and faults/zeros
-    table.append([])
+    table_html += '<tr><td colspan="100%" class="table-secondary"></td></tr>'
 
     # Add row for faults
-    row = ["Faults"] + [str(faults.get(player, 0)) for player in players]
-    table.append(row)
+    table_html += '<tr><th>Faults</th>'
+    for player in players:
+        table_html += f'<td>{faults.get(player, 0)}</td>'
+    table_html += '</tr>'
 
     # Add row for zeros
-    row = ["Zeroes"] + [str(zeros.get(player, 0)) for player in players]
-    table.append(row)
+    table_html += '<tr><th>Zeroes</th>'
+    for player in players:
+        table_html += f'<td>{zeros.get(player, 0)}</td>'
+    table_html += '</tr>'
 
-    # Return the table as a string using the tabulate library
-    return tabulate(table, tablefmt="grid")
+    # Close the table
+    table_html += '</tbody></table>'
+    return table_html
 
-""" if __name__ == '__main__':
-    app.run(debug=True) """
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))  # Use PORT from environment or default to 5000

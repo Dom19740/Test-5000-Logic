@@ -13,6 +13,7 @@ faults = {}
 zeros = {}
 player_index = 0
 game_started = False
+messages = []
 
 @app.route('/')
 def index():
@@ -52,6 +53,9 @@ def game():
     if request.method == 'POST':
         player = request.form['player']
         score_input = request.form['score'].strip().upper()
+        message = (f"\n{player} scored {score_input}.")
+        messages.append(message)
+        flash(message)
 
         # Handle "F" for fault
         if score_input == "F":
@@ -110,11 +114,7 @@ def game():
     current_player = players[player_index]
     
     print("base message:", message)
-    return render_template('game.html', message=message, players=players, scores=scores, faults=faults, zeros=zeros, table=table, current_player=current_player)
-
-
-
-
+    return render_template('game.html', message=message, messages= messages, players=players, scores=scores, faults=faults, zeros=zeros, table=table, current_player=current_player)
 
 
 @app.route('/next_turn')

@@ -55,7 +55,6 @@ def game():
         score_input = request.form['score'].strip().upper()
         message = (f"\n{player} scored {score_input}.")
         messages.append(message)
-        flash(message)
 
         # Handle "F" for fault
         if score_input == "F":
@@ -64,6 +63,7 @@ def game():
             if faults[player] == 3:
                 # Add a message for fault warning
                 message = (f"\n⚠️  Fault Warning: {player} has 3 faults! Moving to next player.")
+                messages.append(message)
                 flash(message)
 
                 faults[player] = 0  # Reset after 3 faults
@@ -74,6 +74,7 @@ def game():
             zeros[player] += 1
             if zeros[player] == 3:
                 message = (f"\n⚠️  Zero Penalty: {player} loses their last score.")
+                messages.append(message)
                 flash(message)
 
                 if scores[player]:
@@ -95,8 +96,8 @@ def game():
                     if other_player != player:
                         if new_total in scores[other_player]:
                             scores[other_player].remove(new_total)  # Remove the exact match
-                            #message.append(f"⚠️ {new_total} is already a total for {other_player}, removing their score!")
                             message = (f"\n⚠️  {new_total} is already a total for {other_player}, removing their score!")
+                            messages.append(message)
                             flash(message)
                             
                             break  # Exit the loop once the total is found and reverted
@@ -113,7 +114,6 @@ def game():
     # Get the current player's name to display it in the form
     current_player = players[player_index]
     
-    print("base message:", message)
     return render_template('game.html', message=message, messages= messages, players=players, scores=scores, faults=faults, zeros=zeros, table=table, current_player=current_player)
 
 

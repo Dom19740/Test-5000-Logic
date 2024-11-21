@@ -4,27 +4,17 @@
     <meta charset="UTF-8">
     <title>Farkle Game</title>
     <style>
-        /* Style for warning messages */
-        .warning {
-            color: red;
-            font-weight: bold;
-            margin-top: 10px;
-            background-color: #ffe6e6;
-            padding: 10px;
-            border: 1px solid red;
-            border-radius: 5px;
+        .container {
+            display: flex;
+            flex-direction: row;
         }
-
-        #messages-container {
-            margin-top: 20px;
+        .left-container {
+            width: 20%%;
+            padding: 20px;
         }
-
-        #acknowledge-button {
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            padding: 5px 10px;
-            cursor: pointer;
-            font-size: 14px;
+        .right-container {
+            width: 40%;
+            padding: 20px;
         }
     </style>
 </head>
@@ -34,43 +24,42 @@
     <form method="POST" action="{{ url_for('reset') }}">
         <button type="submit">Reset Game</button>
     </form>
+    <div class="container">
+        <div class="left-container">
 
-    <h3>Score Table:</h3>
-    <pre>{{ table }}</pre>
-
-    <h2>Current Player: {{ current_player }}</h2>
-
-    <form method="POST" action="{{ url_for('game') }}">
-        <label for="player">Force Player Turn:</label>
-        <select name="player">
-            {% for player in players %}
-                <option value="{{ player }}" {% if player == current_player %}selected{% endif %}>{{ player }}</option>
+            <h2>Current Player: {{ current_player }}</h2>
+            <form method="POST" action="{{ url_for('game') }}">
+                <label for="player">Force Player Turn:</label>
+                <select name="player">
+                    {% for player in players %}
+                        <option value="{{ player }}" {% if player == current_player %}selected{% endif %}>{{ player }}</option>
+                    {% endfor %}
+                </select><br><br>
+                <label for="score">Enter Score (or 'F' for fault, '0' for zero):</label>
+                <input type="text" name="score" id="score-input" required autofocus><br><br>
+            </form>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul>
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+                </ul>
+                {% endif %}
+            {% endwith %}
+            <h3>Round Log:</h3>
+            {% for message in messages|reverse %}
+                <li>{{ message }}</li>
             {% endfor %}
-        </select><br><br>
-
-        <label for="score">Enter Score (or 'F' for fault, '0' for zero):</label>
-        <input type="text" name="score" id="score-input" required autofocus><br><br>
-    </form>
-
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-        {% for message in messages %}
-            {{ message }}
-        {% endfor %}
-        </ul>
-        {% endif %}
-    {% endwith %}
-
-    <h3>Round Log:</h3>
-    {% for message in messages|reverse %}
-        <li>{{ message }}</li>
-    {% endfor %}
-
+        </div>
+        <div class="right-container">
+            <h2>Score Table:</h2>
+            <pre>{{ table }}</pre>
+        </div>
+    </div>
     <script>
         // Focus on the score input after the page loads
         document.getElementById("score-input").focus();
-
     </script>
 </body>
 </html>

@@ -1,0 +1,31 @@
+Setup:
+
+    UI. Enter player name for player 1
+    UI. Continue entering player names until finished
+
+    Build table of players with running totals in rows below, each score gets added to the row above and the new total gets entered in the row below
+
+
+    Ready to play:
+
+    Print table of players and scores and list of running totals
+
+
+Play:
+
+    UI. Enter player number 1
+    UI. Enter player score, or F for Fault or 0 for zero points
+
+
+Rules:
+
+    If score, add score to running total, print new total in next row for that player.
+        Check the new running total against running totals of all other players. If it exists, that running total is removed from list of running totals for that player
+    If F, add 1 to fault count for player, 3x fault counts and then print Fault warning for that player and reset counter
+    If 0, add 1 to 0 points count, 3x zero counts and last running total is removed from the row and player goes back to previous rows total
+
+End:
+    
+    If a player reaches a total of 5000, all other players have 1 last go to try and beat the total.
+    Highest total wins
+

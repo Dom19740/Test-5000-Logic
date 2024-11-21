@@ -3,7 +3,7 @@ from tabulate import tabulate
 
 def setup_game():
     players = []
-    print("Welcome to the Farkle Score Pad!")
+    print("Welcome to the 5000 Score Pad!")
     print("Enter player names one by one. Press Enter on an empty line to finish.")
 
     while True:

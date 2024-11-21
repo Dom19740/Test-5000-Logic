@@ -2,61 +2,84 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Farkle Game</title>
-    <style>
-        .container {
-            display: flex;
-            flex-direction: row;
-        }
-        .left-container {
-            width: 20%%;
-            padding: 20px;
-        }
-        .right-container {
-            width: 40%;
-            padding: 20px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5000 Game Score Pad</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Farkle Game</h1>
-
-    <form method="POST" action="{{ url_for('reset') }}">
-        <button type="submit">Reset Game</button>
-    </form>
-    <div class="container">
-        <div class="left-container">
-
-            <h2>Current Player: {{ current_player }}</h2>
-            <form method="POST" action="{{ url_for('game') }}">
-                <label for="player">Force Player Turn:</label>
-                <select name="player">
-                    {% for player in players %}
-                        <option value="{{ player }}" {% if player == current_player %}selected{% endif %}>{{ player }}</option>
-                    {% endfor %}
-                </select><br><br>
-                <label for="score">Enter Score (or 'F' for fault, '0' for zero):</label>
-                <input type="text" name="score" id="score-input" required autofocus><br><br>
+<body class="bg-light">
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>5000 Game Score Pad</h1>
+            <p>© 2024 <a href="https://www.dpbcreative.com" target="_blank">dpb creative</a>. All rights reserved.</p>
+            <form method="POST" action="{{ url_for('reset') }}">
+                <button type="submit" class="btn btn-danger">Reset Game</button>
             </form>
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                <ul>
-                {% for message in messages %}
-                    {{ message }}
-                {% endfor %}
-                </ul>
-                {% endif %}
-            {% endwith %}
-            <h3>Round Log:</h3>
-            {% for message in messages|reverse %}
-                <li>{{ message }}</li>
-            {% endfor %}
         </div>
-        <div class="right-container">
-            <h2>Score Table:</h2>
-            <pre>{{ table }}</pre>
+
+        <div class="row">
+            <!-- Current Player Column -->
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title">Current Player: {{ current_player }}</h2>
+                        <form method="POST" action="{{ url_for('game') }}">
+                            <div class="mb-3">
+                                <label for="player" class="form-label">Force Player Turn:</label>
+                                <select name="player" id="player" class="form-select">
+                                    {% for player in players %}
+                                        <option value="{{ player }}" {% if player == current_player %}selected{% endif %}>{{ player }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="score" class="form-label">Enter Score (or 'F' for fault, '0' for zero):</label>
+                                <input type="text" name="score" id="score-input" class="form-control" required autofocus>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="alert alert-info" role="alert">
+                            <ul class="mb-0">
+                                {% for message in messages %}
+                                    <li>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <!-- Score Table Column -->
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title">Score Table</h2>
+                        <pre>{{ table }}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Round Log Column -->
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title">Round Log</h2>
+                        <ul class="list-group">
+                            {% for message in messages|reverse %}
+                                <li class="list-group-item">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Focus on the score input after the page loads
         document.getElementById("score-input").focus();

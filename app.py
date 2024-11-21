@@ -133,12 +133,13 @@ def next_turn():
 
 @app.route('/reset', methods=['POST'])
 def reset():
-    global players, scores, faults, zeros, game_started
+    global players, scores, faults, zeros, game_started, messages
     players = []
     scores = {}
     faults = {}
     zeros = {}
     game_started = False
+    messages = []
     return redirect(url_for('index'))
 
 

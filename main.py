@@ -44,7 +44,7 @@ def display_table(players, scores, faults, zeros):
     # Add row for zeroes
     row = ["Zeroes"] + [str(zeros[player]) for player in players]
     table.append(row)
-    
+
     # Print the table
     print("\nCurrent Scores:")
     print(tabulate(table, tablefmt="grid"))
@@ -87,6 +87,16 @@ def play_game(players, scores, faults, zeros):
                 scores[player].append(new_total)
                 zeros[player] = 0  # Reset zero counter on a valid score
                 print(f"Score added! {player}'s new total: {new_total}")
+
+                # Check if the new total exists in any other player's running totals
+                for other_player in players:
+                    if other_player != player:
+                        if new_total in scores[other_player]:
+                            # If the total matches, remove the exact match from the other player's stack
+                            print(f"⚠️ {new_total} is already a total for {other_player}, reverting {other_player}'s score!")
+                            scores[other_player].remove(new_total)  # Remove the exact match
+                            break  # Exit the loop once the total is found and reverted
+
             except ValueError:
                 print("Invalid input. Please enter a number, 'F', or '0'.")
 
@@ -95,8 +105,6 @@ def play_game(players, scores, faults, zeros):
 
         # Move to next player
         player_index = (player_index + 1) % len(players)
-
-
 
 
 # Set up the game and start playing

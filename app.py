@@ -70,7 +70,6 @@ def game():
                 return redirect(url_for('next_turn'))
             else:
                 player_index = (player_index + 1) % len(players)
-                messages.append('same player')
                 return redirect(url_for('next_turn'))
 
 
@@ -170,13 +169,25 @@ def generate_table(players, scores, faults, zeros):
     # Add row for faults
     table_html += '<tr><th>Faults</th>'
     for player in players:
-        table_html += f'<td>{faults.get(player, 0)}</td>'
+        fault_count = faults.get(player, 0)
+        if fault_count == 1:
+            table_html += f'<td style="background-color: yellow">{fault_count}</td>'
+        elif fault_count == 2:
+            table_html += f'<td style="background-color: orange">{fault_count}</td>'
+        else:
+            table_html += f'<td>{fault_count}</td>'
     table_html += '</tr>'
 
     # Add row for zeros
     table_html += '<tr><th>Zeroes</th>'
     for player in players:
-        table_html += f'<td>{zeros.get(player, 0)}</td>'
+        zero_count = zeros.get(player, 0)
+        if zero_count == 1:
+            table_html += f'<td style="background-color: yellow">{zero_count}</td>'
+        elif zero_count == 2:
+            table_html += f'<td style="background-color: orange">{zero_count}</td>'
+        else:
+            table_html += f'<td>{zero_count}</td>'
     table_html += '</tr>'
 
     # Close the table

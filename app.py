@@ -47,7 +47,7 @@ def game():
     global players, scores, faults, zeros, player_index
 
     # Initialize an empty message
-    message = 'init empty_message'
+    message = ''
 
     if request.method == 'POST':
         player = request.form['player']
@@ -59,7 +59,7 @@ def game():
 
             if faults[player] == 3:
                 # Add a message for fault warning
-                message = "You have 3 faults! Moving to next player."
+                message = (f"\n⚠️  Fault Warning: {player} has 3 faults! Moving to next player.")
                 flash(message)
 
                 faults[player] = 0  # Reset after 3 faults
@@ -69,9 +69,11 @@ def game():
         elif score_input == "0":
             zeros[player] += 1
             if zeros[player] == 3:
+                message = (f"\n⚠️  Zero Penalty: {player} loses their last score.")
+                flash(message)
+
                 if scores[player]:
                     removed_score = scores[player].pop()  # Remove last score if 3 zeros
-                    #message.append(f"⚠️ Zero Penalty: {player} loses their last score: {removed_score}.")
                 zeros[player] = 0
                 return redirect(url_for('next_turn'))
 
@@ -90,6 +92,8 @@ def game():
                         if new_total in scores[other_player]:
                             scores[other_player].remove(new_total)  # Remove the exact match
                             #message.append(f"⚠️ {new_total} is already a total for {other_player}, removing their score!")
+                            message = (f"\n⚠️  {new_total} is already a total for {other_player}, removing their score!")
+                            flash(message)
                             
                             break  # Exit the loop once the total is found and reverted
 

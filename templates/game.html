@@ -31,24 +31,17 @@
 <body>
     <h1>Farkle Game</h1>
 
-    <h2>Current Player: {{ current_player }}</h2>
-
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-        {% for message in messages %}
-            <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-        {% endif %}
-    {% endwith %}
-    
+    <form method="POST" action="{{ url_for('reset') }}">
+        <button type="submit">Reset Game</button>
+    </form>
 
     <h3>Score Table:</h3>
     <pre>{{ table }}</pre>
 
+    <h2>Current Player: {{ current_player }}</h2>
+
     <form method="POST" action="{{ url_for('game') }}">
-        <label for="player">Select Player:</label>
+        <label for="player">Force Player Turn:</label>
         <select name="player">
             {% for player in players %}
                 <option value="{{ player }}" {% if player == current_player %}selected{% endif %}>{{ player }}</option>
@@ -57,24 +50,22 @@
 
         <label for="score">Enter Score (or 'F' for fault, '0' for zero):</label>
         <input type="text" name="score" id="score-input" required autofocus><br><br>
-        <button type="submit">Submit Score</button>
     </form>
 
-    <form method="POST" action="{{ url_for('reset') }}">
-        <button type="submit">Reset Game</button>
-    </form>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
 
     <script>
         // Focus on the score input after the page loads
         document.getElementById("score-input").focus();
 
-        // Handle acknowledgment of the warning message
-        if (document.getElementById("acknowledge-button")) {
-            document.getElementById("acknowledge-button").onclick = function() {
-                // Hide the message after acknowledgment
-                document.getElementById("message-box").style.display = 'none';
-            };
-        }
     </script>
 </body>
 </html>

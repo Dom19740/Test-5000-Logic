@@ -18,6 +18,15 @@ final_round_started = False
 final_round_turns = 0
 messages = []
 
+color_options = [
+    '#e74c3c',  # Red
+    '#48c9b0',  # Green
+    '#2e86c1',  # Blue
+    '#f4d03f',  # Yellow
+    '#eb984e',  # Orange
+    '#8e44ad',  # Purple
+]
+
 @app.route('/')
 def index():
     if not game_started:
@@ -26,7 +35,7 @@ def index():
 
 @app.route('/setup', methods=['POST'])
 def setup():
-    global players, scores, faults, zeros, game_started, player_index, player_colors
+    global players, scores, faults, zeros, game_started, player_index, color_options, player_colors
 
     player_name = request.form.get('player_name').strip()
 
@@ -39,8 +48,7 @@ def setup():
         zeros = {player: 0 for player in players}
         player_index = 0  # Initialize player_index to 0 (first player)
 
-        for player in players:
-            player_colors[player] = "#{:06x}".format(random.randint(0, 0xFFFFFF))
+        player_colors = {player: random.choice(color_options) for player in players}
 
         game_started = True
 
@@ -49,7 +57,6 @@ def setup():
         # If no player names have been entered, show an error
         return render_template('setup_game.html', error="Please enter at least one player.")
     
-
 
 
 @app.route('/game', methods=['GET', 'POST'])
@@ -138,7 +145,6 @@ def game():
                            player_colors=player_colors,
                            )
 
-
 def handle_next_turn():
     """
     Handles advancing to the next player's turn, including logic for the final round.
@@ -194,7 +200,7 @@ def generate_table(players, scores, faults, zeros):
     table_html += '<thead class="table-dark">'
     table_html += '<tr><th>Name</th>'
     for player in players:
-        table_html += f'<th>{player}</th>'
+        table_html += f'<th style="background-color: {player_colors[player]}">{player}</th>'
     table_html += '</tr></thead>'
 
     

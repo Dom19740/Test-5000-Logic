@@ -19,9 +19,9 @@
         <div class="row">
             <!-- Current Player -->
             <div class="col-md-4">
-                <div class="card mb-4" style="background-color: {{ player_colors[current_player] }}">
+                <div class="card mb-4">
                     <div class="card-body">
-                        <h2 class="card-title">Current Player: {{ current_player }}</h2>
+                        <h2 class="card-title" style="padding: 10px; border-radius: 10px; background-color: {{ player_colors[current_player] }}">Current Player: {{ current_player }}</h2>
                         <form method="POST" action="{{ url_for('game') }}">
                             <div class="mb-3">
                                 <label for="player" class="form-label">Force Player Turn:</label>

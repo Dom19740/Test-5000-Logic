@@ -153,18 +153,7 @@ def generate_table(players, scores, faults, zeros):
         table_html += f'<th>{player}</th>'
     table_html += '</tr></thead>'
 
-    # Add rows for each round
-    table_html += '<tbody>'
-    for round_index in range(max_rounds):
-        table_html += f'<tr><th>Total {round_index + 1}</th>'
-        for player in players:
-            score_for_round = scores[player][round_index] if round_index < len(scores[player]) else ""
-            table_html += f'<td>{score_for_round}</td>'
-        table_html += '</tr>'
-
-    # Add a blank row for spacing between scores and faults/zeros
-    table_html += '<tr><td colspan="100%" class="table-secondary"></td></tr>'
-
+    
     # Add row for faults
     table_html += '<tr><th>Faults</th>'
     for player in players:
@@ -188,6 +177,19 @@ def generate_table(players, scores, faults, zeros):
         else:
             table_html += f'<td>{zero_count}</td>'
     table_html += '</tr>'
+
+    # Add a blank row for spacing between scores and faults/zeros
+    table_html += '<tr><td colspan="100%" class="table-secondary"></td></tr>'
+
+    # Add rows for each round
+    table_html += '<tbody>'
+    for round_index in reversed(range(max_rounds)):
+        table_html += f'<tr><th>Total {round_index + 1}</th>'
+        for player in players:
+            score_for_round = scores[player][round_index] if round_index < len(scores[player]) else ""
+            table_html += f'<td>{score_for_round}</td>'
+        table_html += '</tr>'
+
 
     # Close the table
     table_html += '</tbody></table>'

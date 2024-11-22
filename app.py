@@ -46,10 +46,8 @@ def setup():
         scores = {player: [] for player in players}
         faults = {player: 0 for player in players}
         zeros = {player: 0 for player in players}
-        player_index = 0  # Initialize player_index to 0 (first player)
-
+        player_index = 0 
         player_colors = {player: random.choice(color_options) for player in players}
-
         game_started = True
 
         return redirect(url_for('game'))
@@ -203,7 +201,13 @@ def generate_table(players, scores, faults, zeros):
         table_html += f'<th style="background-color: {player_colors[player]}">{player}</th>'
     table_html += '</tr></thead>'
 
-    
+    # Add row for current total
+    table_html += '<tr><th>Current Total</th>'
+    for player in players:
+        current_total = scores[player][-1] if scores[player] else 0
+        table_html += f'<td>{current_total}</td>'
+    table_html += '</tr>'
+
     # Add row for faults
     table_html += '<tr><th>Faults</th>'
     for player in players:
@@ -233,8 +237,8 @@ def generate_table(players, scores, faults, zeros):
 
     # Add rows for each round
     table_html += '<tbody>'
-    for round_index in reversed(range(max_rounds)):
-        table_html += f'<tr><th>Total {round_index + 1}</th>'
+    for round_index in range(max_rounds):
+        table_html += f'<tr><th>Score {round_index + 1}</th>'
         for player in players:
             score_for_round = scores[player][round_index] if round_index < len(scores[player]) else ""
             table_html += f'<td>{score_for_round}</td>'
@@ -244,8 +248,6 @@ def generate_table(players, scores, faults, zeros):
     # Close the table
     table_html += '</tbody></table>'
     return table_html
-
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))  # Use PORT from environment or default to 5000

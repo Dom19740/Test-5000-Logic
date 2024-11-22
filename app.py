@@ -65,12 +65,10 @@ def game():
                 message = (f"\n⚠️  Fault Warning: {player} has 3 faults! Moving to next player.")
                 messages.append(message)
                 
-
                 faults[player] = 0  # Reset after 3 faults
                 return redirect(url_for('next_turn'))
             else:
-                player_index = (player_index + 1) % len(players)
-                return redirect(url_for('next_turn'))
+                return redirect(url_for('game'))
 
 
         # Handle "0" for zero points

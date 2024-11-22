@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from tabulate import tabulate
-import os
+import os, random
 
 
 app = Flask(__name__)
@@ -11,6 +11,7 @@ players = []
 scores = {}
 faults = {}
 zeros = {}
+player_colors = {}
 player_index = 0
 game_started = False
 final_round_started = False
@@ -25,7 +26,7 @@ def index():
 
 @app.route('/setup', methods=['POST'])
 def setup():
-    global players, scores, faults, zeros, game_started, player_index
+    global players, scores, faults, zeros, game_started, player_index, player_colors
 
     player_name = request.form.get('player_name').strip()
 
@@ -37,12 +38,17 @@ def setup():
         faults = {player: 0 for player in players}
         zeros = {player: 0 for player in players}
         player_index = 0  # Initialize player_index to 0 (first player)
+
+        for player in players:
+            player_colors[player] = "#{:06x}".format(random.randint(0, 0xFFFFFF))
+
         game_started = True
+
         return redirect(url_for('game'))
     else:
         # If no player names have been entered, show an error
         return render_template('setup_game.html', error="Please enter at least one player.")
-
+    
 
 
 
@@ -120,7 +126,17 @@ def game():
     # Get the current player's name to display it in the form
     current_player = players[player_index]
 
-    return render_template('game.html', message=message, messages=messages, players=players, scores=scores, faults=faults, zeros=zeros, table=table, current_player=current_player)
+    return render_template('game.html',
+                           message=message,
+                           messages=messages,
+                           players=players,
+                           scores=scores,
+                           faults=faults, 
+                           zeros=zeros,
+                           table=table,
+                           current_player=current_player,
+                           player_colors=player_colors,
+                           )
 
 
 def handle_next_turn():
@@ -155,11 +171,12 @@ def end_game():
 
 @app.route('/reset', methods=['POST'])
 def reset():
-    global players, scores, faults, zeros, game_started, messages, final_round_started, final_round_turns
+    global players, scores, faults, zeros, game_started, messages, final_round_started, final_round_turns, player_colors
     players = []
     scores = {}
     faults = {}
     zeros = {}
+    player_colors = {}
     game_started = False
     messages = []
     final_round_started = False

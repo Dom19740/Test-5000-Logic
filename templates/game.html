@@ -19,7 +19,7 @@
         <div class="row">
             <!-- Current Player -->
             <div class="col-md-4">
-                <div class="card mb-4">
+                <div class="card mb-4" style="background-color: {{ player_colors[current_player] }}">
                     <div class="card-body">
                         <h2 class="card-title">Current Player: {{ current_player }}</h2>
                         <form method="POST" action="{{ url_for('game') }}">
@@ -39,7 +39,7 @@
                         </form>
                         
                                 <div class="card-body">
-                                    <ul class="list-group">
+                                    <ul class="list-group background-color">
                                         {% if messages %}
                                             <li class="list-group-item">{{ messages[-1] }}</li>
                                         {% else %}

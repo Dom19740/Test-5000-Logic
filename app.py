@@ -13,6 +13,8 @@ faults = {}
 zeros = {}
 player_index = 0
 game_started = False
+final_round_started = False
+final_round_turns = 0
 messages = []
 
 @app.route('/')
@@ -43,9 +45,10 @@ def setup():
 
 
 
+
 @app.route('/game', methods=['GET', 'POST'])
 def game():
-    global players, scores, faults, zeros, player_index
+    global players, scores, faults, zeros, player_index, final_round_started, final_round_turns
 
     # Initialize an empty message
     message = ''
@@ -53,7 +56,7 @@ def game():
     if request.method == 'POST':
         player = request.form['player']
         score_input = request.form['score'].strip().upper()
-        message = (f"\n{player} scored {score_input}.")
+        message = f"{player} scored {score_input}."
         messages.append(message)
 
         # Handle "F" for fault
@@ -61,27 +64,25 @@ def game():
             faults[player] += 1
 
             if faults[player] == 3:
-                # Add a message for fault warning
-                message = (f"\n⚠️  Fault Warning: {player} has 3 faults! Moving to next player.")
+                message = f"⚠️  Fault Warning: {player} has 3 faults! Moving to next player."
                 messages.append(message)
-                
+
                 faults[player] = 0  # Reset after 3 faults
-                return redirect(url_for('next_turn'))
-            else:
-                return redirect(url_for('game'))
+                return handle_next_turn()
+
+            return redirect(url_for('game'))
 
         # Handle "0" for zero points
         elif score_input == "0":
             zeros[player] += 1
             if zeros[player] == 3:
-                message = (f"\n⚠️  Zero Penalty: {player} loses their last score.")
+                message = f"⚠️  Zero Penalty: {player} loses their last score."
                 messages.append(message)
-                
 
                 if scores[player]:
-                    removed_score = scores[player].pop()  # Remove last score if 3 zeros
+                    scores[player].pop()  # Remove last score if 3 zeros
                 zeros[player] = 0
-                return redirect(url_for('next_turn'))
+                return handle_next_turn()
 
         # Handle regular score input
         else:
@@ -97,49 +98,73 @@ def game():
                     if other_player != player:
                         if new_total in scores[other_player]:
                             scores[other_player].remove(new_total)  # Remove the exact match
-                            message = (f"\n⚠️  {new_total} is already a total for {other_player}, removing their score!")
+                            message = f"⚠️  {new_total} is already a total for {other_player}, removing their score!"
                             messages.append(message)
                             break  # Exit the loop once the total is found and reverted
 
                 # Check if the player has reached or exceeded 5000 points
-                if new_total >= 5000:
-                    message = (f"🎉  {player} has {new_total} pts! Final Round!")
+                if new_total >= 5000 and not final_round_started:
+                    final_round_started = True
+                    message = f"🎉 {player} has reached a score of {new_total}! Final round begins: Every player gets one more turn."
                     messages.append(message)
 
             except ValueError:
                 pass
 
-        # After processing the score, move to the next player
-        return redirect(url_for('next_turn'))
+        # Move to the next player
+        return handle_next_turn()
 
-    # Generate the score table as a string using tabulate
+    # Generate the score table as a string
     table = generate_table(players, scores, faults, zeros)
 
     # Get the current player's name to display it in the form
     current_player = players[player_index]
-    
-    return render_template('game.html', message=message, messages= messages, players=players, scores=scores, faults=faults, zeros=zeros, table=table, current_player=current_player)
+
+    return render_template('game.html', message=message, messages=messages, players=players, scores=scores, faults=faults, zeros=zeros, table=table, current_player=current_player)
 
 
-@app.route('/next_turn')
-def next_turn():
-    global player_index
+def handle_next_turn():
+    """
+    Handles advancing to the next player's turn, including logic for the final round.
+    """
+    global player_index, final_round_started, final_round_turns
 
     # Move to the next player
     player_index = (player_index + 1) % len(players)
-    
-    # Redirect back to the game page for the next player's turn
+
+    if final_round_started:
+        final_round_turns += 1
+
+        # End the game after every player has had their final turn
+        if final_round_turns >= len(players):
+            return redirect(url_for('end_game'))
+
     return redirect(url_for('game'))
+
+
+@app.route('/end_game', methods=['GET'])
+def end_game():
+    # Calculate and pass necessary data to the end game template
+    winner = max(scores, key=lambda player: scores[player][-1] if scores[player] else 0)
+    winner_score = scores[winner][-1] if scores[winner] else 0
+
+    table = generate_table(players, scores, faults, zeros)
+
+    return render_template('end_game.html', winner=winner, winner_score=winner_score, table=table, messages=messages)
+
 
 @app.route('/reset', methods=['POST'])
 def reset():
-    global players, scores, faults, zeros, game_started, messages
+    global players, scores, faults, zeros, game_started, messages, final_round_started, final_round_turns
     players = []
     scores = {}
     faults = {}
     zeros = {}
     game_started = False
     messages = []
+    final_round_started = False
+    final_round_turns = 0
+
     return redirect(url_for('index'))
 
 

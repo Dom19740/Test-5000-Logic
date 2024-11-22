@@ -70,7 +70,6 @@ def game():
             else:
                 return redirect(url_for('game'))
 
-
         # Handle "0" for zero points
         elif score_input == "0":
             zeros[player] += 1
@@ -100,9 +99,12 @@ def game():
                             scores[other_player].remove(new_total)  # Remove the exact match
                             message = (f"\n⚠️  {new_total} is already a total for {other_player}, removing their score!")
                             messages.append(message)
-                            
-                            
                             break  # Exit the loop once the total is found and reverted
+
+                # Check if the player has reached or exceeded 5000 points
+                if new_total >= 5000:
+                    message = (f"🎉  {player} has {new_total} pts! Final Round!")
+                    messages.append(message)
 
             except ValueError:
                 pass

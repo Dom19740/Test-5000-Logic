@@ -8,7 +8,7 @@ The app was built in **1 day**, transitioning from a plain Python implementation
 
 - **Dynamic Player Setup**: Add players at the start of the game with unique color coding.
 - **Real-Time Score Tracking**: Enter scores, faults, and zeros for players. The app keeps running totals and enforces game rules like penalties for faults/zeros.
-- **Handle Curtom Total Removals**: Deals with a custom rule, whereby if one players running total matches that of a previous players, the latter running total is removed from the score board.
+- **Handle Custom Total Removals**: Deals with a custom rule, whereby if one players running total matches that of a previous players, the latter running total is removed from the score board.
 - **Final Round Logic**: Automatically detects when a player reaches 5000 points and initiates the final round.
 - **Interactive Game Log**: Displays a running log of events during the game (e.g., faults, penalties, total removals).
 - **Custom Styling with Bootstrap**: Uses a clean, responsive design for an intuitive user experience.

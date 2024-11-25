@@ -1,3 +1,6 @@
+# Copyright (c) 2024 dpb creative
+# This code is licensed for non-commercial use only. See LICENSE file for details.
+
 from flask import Flask, render_template, request, redirect, url_for, flash
 from tabulate import tabulate
 import os, random

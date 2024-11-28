@@ -51,10 +51,6 @@
                                         {% endif %}
                                     </ul>
                                 </div>
-                        
-                        
-
-
                     </div>
                 </div>
             </div>
@@ -67,7 +63,11 @@
                         <div class="table-responsive">
                             {{ table|safe }}
                         </div>
+                        <form method="POST" action="{{ url_for('reset') }}">
+                            <button type="submit" class="btn btn-danger">Reset Game</button>
+                        </form>
                     </div>
+
                 </div>
             </div>
         
@@ -81,9 +81,7 @@
                                 <li class="list-group-item">{{ message }}</li>
                             {% endfor %}
                         </ul>
-                        <form method="POST" action="{{ url_for('reset') }}">
-                            <button type="submit" class="btn btn-danger">Reset Game</button>
-                        </form>
+
                     </div>
                 </div>
             </div>
@@ -110,7 +108,7 @@
                     scoreInput.value = '0';
                     return;
                 }
-                
+
                 if (value === 'f') {
                     // Allow 'f' for fault
                     return;

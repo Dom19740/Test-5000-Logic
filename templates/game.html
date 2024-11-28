@@ -35,22 +35,27 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="mb-3">
-                                <label for="score" class="form-label">Enter Score: (or 'F' for fault, 'empty' for zero)</label>
-                                <input type="text" inputmode="numeric" name="score" id="score-input" class="form-control" autofocus>
+                            <div class="d-flex">
+                                <button type="submit" class="btn btn-primary ms-2 btn-enter">0 / Enter</button>
+                                <input type="text" inputmode="numeric" name="score" id="score-input" class="form-control w-25" autofocus> 
                             </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <div class="d-flex flex-wrap">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('score-input').value='F'">F</button>
+                                <button type="button" class="btn btn-secondary" onclick="add50()">+50</button>
+                                <button type="button" class="btn btn-secondary" onclick="add100()">+100</button>
+                                <button type="button" class="btn btn-secondary" onclick="add250()">+250</button>
+                                <button type="button" class="btn btn-secondary" onclick="add1000()">+1000</button>
+                            </div>
                         </form>
-
-                                <div class="card-body">
-                                    <ul class="list-group background-color">
-                                        {% if messages %}
-                                            <li class="list-group-item">{{ messages[-1] }}</li>
-                                        {% else %}
-                                            <li class="list-group-item">No messages yet</li>
-                                        {% endif %}
-                                    </ul>
-                                </div>
+                        <div class="card-body">
+                            <ul class="list-group background-color">
+                                {% if messages %}
+                                    <li class="list-group-item">{{ messages[-1] }}</li>
+                                {% else %}
+                                    <li class="list-group-item">No messages yet</li>
+                                {% endif %}
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -124,6 +129,71 @@
                 }
             });
         });
+
+        function add50() {
+            var input = document.getElementById('score-input');
+            var value = input.value.trim().toLowerCase();
+            if (value === 'f' || value === '') {
+                if (value === '') {
+                    input.value = '50';
+                }
+                return; // don't try to add 50 to 'f' or empty string
+            }
+            var numericValue = parseInt(value, 10);
+            if (!isNaN(numericValue)) {
+                var newValue = numericValue + 50;
+                input.value = newValue.toString();
+            }
+        }
+        
+        function add100() {
+            var input = document.getElementById('score-input');
+            var value = input.value.trim().toLowerCase();
+            if (value === 'f' || value === '') {
+                if (value === '') {
+                    input.value = '100';
+                }
+                return; // don't try to add 100 to 'f' or empty string
+            }
+            var numericValue = parseInt(value, 10);
+            if (!isNaN(numericValue)) {
+                var newValue = numericValue + 100;
+                input.value = newValue.toString();
+            }
+        }
+        
+        function add250() {
+            var input = document.getElementById('score-input');
+            var value = input.value.trim().toLowerCase();
+            if (value === 'f' || value === '') {
+                if (value === '') {
+                    input.value = '250';
+                }
+                return; // don't try to add 250 to 'f' or empty string
+            }
+            var numericValue = parseInt(value, 10);
+            if (!isNaN(numericValue)) {
+                var newValue = numericValue + 250;
+                input.value = newValue.toString();
+            }
+        }
+
+        function add1000() {
+            var input = document.getElementById('score-input');
+            var value = input.value.trim().toLowerCase();
+            if (value === 'f' || value === '') {
+                if (value === '') {
+                    input.value = '1000';
+                }
+                return; // don't try to add 1000 to 'f' or empty string
+            }
+            var numericValue = parseInt(value, 10);
+            if (!isNaN(numericValue)) {
+                var newValue = numericValue + 1000;
+                input.value = newValue.toString();
+            }
+        }
+
     </script>
     
     

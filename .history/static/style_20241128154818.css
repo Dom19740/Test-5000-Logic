@@ -1,0 +1,82 @@
+body {
+    background-color: #f0f0f0; /* bg-light */
+}
+
+.container {
+    padding-top: 4rem; /* py-4 */
+}
+
+.d-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem; /* mb-4 */
+}
+
+.card {
+    margin-bottom: 1rem; /* mb-4 */
+}
+
+.card-body {
+    padding: 1rem; /* default Bootstrap padding */
+}
+
+.card-title {
+    margin-bottom: 0.5rem; /* default Bootstrap margin */
+    color: white;
+    padding: 10px;
+    border-radius: 10px; background-color: orange"
+}
+
+.form-label {
+    margin-bottom: 0.5rem; /* default Bootstrap margin */
+}
+
+.form-select, .form-control {
+    padding: 0.5rem 1rem; /* default Bootstrap padding */
+    border: 1px solid #ced4da; /* default Bootstrap border */
+    border-radius: 0.25rem; /* default Bootstrap border-radius */
+}
+
+.btn {
+    padding: 0.5rem 1rem; /* default Bootstrap padding */
+    border: none; /* default Bootstrap border */
+    border-radius: 0.25rem; /* default Bootstrap border-radius */
+    cursor: pointer; /* default Bootstrap cursor */
+}
+
+.btn-danger {
+    background-color: #dc3545; /* default Bootstrap danger color */
+    color: #ffffff; /* default Bootstrap text color */
+}
+
+#score-input {
+    padding: 0.5rem 1rem; /* default Bootstrap padding */
+    border: 1px solid #ced4da; /* default Bootstrap border */
+    border-radius: 0.25rem; /* default Bootstrap border-radius */
+}
+
+.list-group {
+    padding: 0; /* default Bootstrap padding */
+    margin-bottom: 0; /* default Bootstrap margin */
+    border: 1px solid #ced4da; /* default Bootstrap border */
+    border-radius: 0.25rem; /* default Bootstrap border-radius */
+}
+
+.list-group-item {
+    padding: 0.5rem 1rem; /* default Bootstrap padding */
+    border-bottom: 1px solid #ced4da; /* default Bootstrap border */
+}
+
+.list-group-item:last-child {
+    border-bottom: none; /* default Bootstrap border */
+}
+
+/* Custom styles */
+
+.card-title {
+    color: #ffffff; /* white */
+    padding: 1rem; /* custom padding */
+    border-radius: 1rem; /* custom border-radius */
+    background-color: #ffa07a; /* orange */
+}

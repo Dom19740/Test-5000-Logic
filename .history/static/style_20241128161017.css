@@ -1,0 +1,15 @@
+body.bg-light {
+    background-color: #057ff9 !important;
+}
+
+
+.hide-always {
+    display: none;
+}
+
+  
+  @media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none;
+  }
+}

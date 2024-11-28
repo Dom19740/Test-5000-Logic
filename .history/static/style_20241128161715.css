@@ -1,0 +1,17 @@
+body.bg-light {
+    background-color: #97f905 !important;
+}
+
+
+
+
+.card-title {
+    color: #057ff9 !important;
+}
+
+  
+  @media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none;
+  }
+}

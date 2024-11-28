@@ -1,0 +1,14 @@
+.bod.hide-always
+
+
+
+.hide-always {
+    display: none;
+}
+
+  
+  @media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none;
+  }
+}

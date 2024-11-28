@@ -1,0 +1,10 @@
+.hide-always {
+    display: ;
+}
+
+  
+  @media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none;
+  }
+}

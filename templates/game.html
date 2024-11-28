@@ -17,9 +17,6 @@
             <div class="hide-on-mobile">
                 <h1>5000 Game Score Pad</h1>
                 <p>© 2024 <a href="https://www.dpbcreative.com" target="_blank">dpb creative</a>. All rights reserved.</p>
-                <form method="POST" action="{{ url_for('reset') }}">
-                    <button type="submit" class="btn btn-danger">Reset Game</button>
-                </form>
             </div>
         </div>
 
@@ -39,8 +36,8 @@
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label for="score" class="form-label">Enter Score (or 'F' for fault, '0' for zero):</label>
-                                <input type="text" name="score" id="score-input" class="form-control" required autofocus>
+                                <label for="score" class="form-label">Enter Score: (or 'F' for fault, empty for zero)</label>
+                                <input type="text" name="score" id="score-input" class="form-control" autofocus>
                             </div>
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
@@ -84,6 +81,9 @@
                                 <li class="list-group-item">{{ message }}</li>
                             {% endfor %}
                         </ul>
+                        <form method="POST" action="{{ url_for('reset') }}">
+                            <button type="submit" class="btn btn-danger">Reset Game</button>
+                        </form>
                     </div>
                 </div>
             </div>

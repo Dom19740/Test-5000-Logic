@@ -69,11 +69,14 @@ def game():
 
     if request.method == 'POST':
         player = request.form['player']
-        score_input = request.form['score'].strip().upper()
+        score_input = request.form.get('score').strip().upper()
+
         message = f"{player} scored {score_input}."
         messages.append(message)
 
         # Handle "F" for fault
+        print(score_input)
+
         if score_input == "F":
             faults[player] += 1
 
@@ -87,7 +90,7 @@ def game():
             return redirect(url_for('game'))
 
         # Handle "0" for zero points
-        elif score_input == "0":
+        elif score_input == "0" or score_input is None or score_input.strip() == "":
             zeros[player] += 1
             if zeros[player] == 3:
                 message = f"⚠️  Zero Penalty: {player} loses their last score."
@@ -97,6 +100,7 @@ def game():
                     scores[player].pop()  # Remove last score if 3 zeros
                 zeros[player] = 0
                 return handle_next_turn()
+
 
         # Handle regular score input
         else:

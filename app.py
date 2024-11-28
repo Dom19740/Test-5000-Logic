@@ -22,12 +22,14 @@ final_round_turns = 0
 messages = []
 
 color_options = [
-    '#e74c3c',  # Red
-    '#48c9b0',  # Green
-    '#2e86c1',  # Blue
-    '#f4d03f',  # Yellow
-    '#eb984e',  # Orange
-    '#8e44ad',  # Purple
+    '#ff0088',
+    '#ffa07a',
+    '#ffd500',
+    '#34c760',
+    '#007bff',
+    '#6c5ce7',
+    '#9824aa',
+    '#000',
 ]
 
 @app.route('/')
@@ -50,7 +52,12 @@ def setup():
         faults = {player: 0 for player in players}
         zeros = {player: 0 for player in players}
         player_index = 0 
-        player_colors = {player: random.choice(color_options) for player in players}
+
+        for player in players:
+            color = random.choice(color_options)
+            player_colors[player] = color
+            color_options.remove(color)  # Remove the assigned color
+
         game_started = True
 
         return redirect(url_for('game'))
@@ -192,6 +199,7 @@ def reset():
     messages = []
     final_round_started = False
     final_round_turns = 0
+    color_options = color_options[:]  
 
     return redirect(url_for('index'))
 

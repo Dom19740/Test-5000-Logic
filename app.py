@@ -189,7 +189,7 @@ def end_game():
 
 @app.route('/reset', methods=['POST'])
 def reset():
-    global players, scores, faults, zeros, game_started, messages, final_round_started, final_round_turns, player_colors
+    global players, scores, faults, zeros, game_started, messages, final_round_started, final_round_turns, player_colors, color_options
     players = []
     scores = {}
     faults = {}
@@ -199,7 +199,16 @@ def reset():
     messages = []
     final_round_started = False
     final_round_turns = 0
-    color_options = color_options[:]  
+    color_options = [
+    '#ff0088',
+    '#ffa07a',
+    '#ffd500',
+    '#34c760',
+    '#007bff',
+    '#6c5ce7',
+    '#9824aa',
+    '#000',
+]
 
     return redirect(url_for('index'))
 

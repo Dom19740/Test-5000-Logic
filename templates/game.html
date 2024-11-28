@@ -26,7 +26,7 @@
                 <div class="card mb-4">
                     <div class="card-body">
                         <h2 class="card-title" style="color: white; padding: 10px; border-radius: 10px; background-color: {{ player_colors[current_player] }}">Current Player: {{ current_player }}</h2>
-                        <form method="POST" action="{{ url_for('game') }}">
+                        <form id="score-form" method="POST" action="{{ url_for('game') }}">
                             <div class="mb-3 hide-always">
                                 <label for="player" class="form-label">Force Player Turn:</label>
                                 <select name="player" id="player" class="form-select">
@@ -36,12 +36,12 @@
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label for="score" class="form-label">Enter Score: (or 'F' for fault, empty for zero)</label>
+                                <label for="score" class="form-label">Enter Score: (or 'F' for fault, 'empty' for zero)</label>
                                 <input type="text" inputmode="numeric" name="score" id="score-input" class="form-control" autofocus>
                             </div>
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
-                        
+
                                 <div class="card-body">
                                     <ul class="list-group background-color">
                                         {% if messages %}
@@ -92,9 +92,42 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
-        // Focus on the score input after the page loads
-        document.getElementById("score-input").focus();
+        document.addEventListener('DOMContentLoaded', () => {
+            const scoreInput = document.getElementById('score-input');
+            const scoreForm = document.getElementById('score-form');
+    
+            // Focus on the score input after the page loads
+            scoreInput.focus();
+    
+            // Validate the input on form submission
+            scoreForm.addEventListener('submit', (event) => {
+                const value = scoreInput.value.trim().toLowerCase(); // Normalize input to lowercase
+                
+                if (value === '') {
+                    // Allow empty field to register as 0
+                    scoreInput.value = '0';
+                    return;
+                }
+                
+                if (value === 'f') {
+                    // Allow 'f' for fault
+                    return;
+                }
+    
+                const numericValue = parseInt(value, 10);
+    
+                if (isNaN(numericValue) || numericValue % 50 !== 0) {
+                    // If invalid, prevent form submission and alert the user
+                    event.preventDefault();
+                    alert("Please enter 'f' or a number that is a multiple of 50.");
+                    scoreInput.focus(); // Refocus input field for correction
+                }
+            });
+        });
     </script>
+    
+    
 </body>
 </html>

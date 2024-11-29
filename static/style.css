@@ -1,3 +1,14 @@
+.colors {
+    background-color: #8b68ff; /* Red */
+    background-color: #ffa07a; /* Orange */
+    background-color: #ffe66c; /* Yellow */
+    background-color: #34c760; /* Green */
+    background-color: #007bff; /* Blue */
+    background-color: #6c5ce7; /* Indigo */
+    background-color: #9824aa; /* Violet */
+    background-color: #000; /* Violet */
+}
+
 .hide-always {
     display: none;
 }

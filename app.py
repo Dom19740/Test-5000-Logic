@@ -226,7 +226,7 @@ def generate_table(players, scores, faults, zeros):
     table_html += '</tr></thead>'
 
     # Add row for current total
-    table_html += '<tr><th>Current Total</th>'
+    table_html += '<tr><th>Total</th>'
     for player in players:
         current_total = scores[player][-1] if scores[player] else 0
         table_html += f'<td>{current_total}</td>'

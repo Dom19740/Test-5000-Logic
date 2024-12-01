@@ -58,9 +58,11 @@ def save_winner(winner, winner_score):
 
 
 @app.route('/')
+@app.route('/')
 def index():
     if not game_started:
-        return render_template('setup_game.html')
+        previous_winners = load_previous_winners()
+        return render_template('setup_game.html', previous_winners=previous_winners)
     return redirect(url_for('game'))
 
 @app.route('/setup', methods=['POST'])

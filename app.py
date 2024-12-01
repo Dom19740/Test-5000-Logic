@@ -28,7 +28,7 @@ color_options = [
     '#ffa07a',
     '#ffd500',
     '#34c760',
-    '#007bff',
+    '#00c3ff',
     '#6c5ce7',
     '#9824aa',
     '#000',
@@ -117,7 +117,7 @@ def game():
             faults[player] += 1
 
             if faults[player] == 3:
-                message = f"⚠️  Fault Warning: {player} has 3 faults! Moving to next player."
+                message = f"🚫  Fault Warning: {player} has 3 faults! Moving to next player."
                 messages.append(message)
 
                 faults[player] = 0  # Reset after 3 faults

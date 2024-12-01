@@ -65,7 +65,7 @@
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <h2 class="card-title">Score Table</h2>
+                        <h2 class="text-center card-title">Score Table</h2>
                         <div class="table-responsive">
                             {{ table|safe }}
                         </div>
@@ -81,7 +81,7 @@
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <h2 class="card-title">Game Log</h2>
+                        <h2 class="text-center card-title">Game Log</h2>
                         <ul class="list-group">
                             {% for message in messages|reverse %}
                                 <li class="list-group-item">{{ message }}</li>
@@ -91,6 +91,8 @@
                     </div>
                 </div>
             </div>
+
+            {% include 'scoring.html' %}
         </div>
         
     </div>

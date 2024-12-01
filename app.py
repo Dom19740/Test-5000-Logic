@@ -3,7 +3,7 @@
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from tabulate import tabulate
-import os, random
+import os, random, json
 
 
 app = Flask(__name__)
@@ -20,6 +20,8 @@ game_started = False
 final_round_started = False
 final_round_turns = 0
 messages = []
+previous_winners_file = 'previous_winners.json'
+
 
 color_options = [
     '#ff0088',
@@ -31,6 +33,29 @@ color_options = [
     '#9824aa',
     '#000',
 ]
+
+
+# Function to load previous winners from file
+def load_previous_winners():
+    try:
+        print("Loading previous winners from file...")
+        with open(previous_winners_file, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print("Error: File not found.")
+        return []
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON.")
+        return []
+
+
+# Function to save previous winners to file
+def save_winner(winner, winner_score):
+    previous_winners = load_previous_winners()
+    previous_winners.insert(0, {'name': winner, 'score': winner_score})
+    with open(previous_winners_file, 'w') as f:
+        json.dump(previous_winners, f)
+
 
 @app.route('/')
 def index():
@@ -46,6 +71,8 @@ def setup():
 
     if player_name:  # Add the player if a name is entered
         players.append(player_name)
+        
+
         return render_template('setup_game.html', players=players)  # Continue adding players
     elif len(players) > 0:  # Start the game if no name is entered and there are players
         scores = {player: [] for player in players}
@@ -181,6 +208,9 @@ def end_game():
     # Calculate and pass necessary data to the end game template
     winner = max(scores, key=lambda player: scores[player][-1] if scores[player] else 0)
     winner_score = scores[winner][-1] if scores[winner] else 0
+
+    # Save the winner to the previous winners file
+    save_winner(winner, winner_score)
 
     table = generate_table(players, scores, faults, zeros)
 

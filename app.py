@@ -3,11 +3,17 @@
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from tabulate import tabulate
+from datetime import timedelta
+
 import os, random, json
+import time
 
 
 app = Flask(__name__)
 app.secret_key = 'my_secret_key'
+
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(hours=1)
+app.config['MAX_CONTENT_LENGTH'] = None
 
 # Global variables
 players = []
@@ -56,14 +62,17 @@ def save_winner(winner, winner_score):
     with open(previous_winners_file, 'w') as f:
         json.dump(previous_winners, f)
 
+@app.route('/')
+def hello():
+    time.sleep(30)  # Simulate a long-running task
+    return "Hello World!"
 
-@app.route('/')
-@app.route('/')
+""" @app.route('/')
 def index():
     if not game_started:
         previous_winners = load_previous_winners()
         return render_template('setup_game.html', previous_winners=previous_winners)
-    return redirect(url_for('game'))
+    return redirect(url_for('game')) """
 
 @app.route('/setup', methods=['POST'])
 def setup():
@@ -306,5 +315,4 @@ def generate_table(players, scores, faults, zeros):
     return table_html
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Use PORT from environment or default to 5000
-    app.run(host="0.0.0.0", port=port)
+    app.run(debug=True)

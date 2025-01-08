@@ -58,6 +58,7 @@ def load_previous_winners():
 
 # Function to save previous winners to file
 def save_winner(winner, winner_score):
+    print(f"Saving winner: {winner} with score: {winner_score}")  # Debugging winner saving
     previous_winners = load_previous_winners()
     previous_winners.insert(0, {'name': winner, 'score': winner_score})
     with open(previous_winners_file, 'w') as f:
@@ -68,6 +69,8 @@ def index():
     if not game_started:
         previous_winners = load_previous_winners()
         return render_template('setup_game.html', previous_winners=previous_winners)
+    
+    print(f"Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
     return redirect(url_for('game'))
 
 @app.route('/setup', methods=['POST'])
@@ -77,6 +80,7 @@ def setup():
     player_name = request.form.get('player_name').strip()
 
     if player_name:  # Add the player if a name is entered
+        print(f"Adding player: {player_name}")  # Debugging statement
         players.append(player_name)
         
 
@@ -94,6 +98,7 @@ def setup():
 
         game_started = True
 
+        print(f"Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
         return redirect(url_for('game'))
     else:
         # If no player names have been entered, show an error
@@ -112,6 +117,15 @@ def game():
         player = request.form['player']
         score_input = request.form.get('score').strip().upper()
 
+        print(f"Player: {player}, Score Input: {score_input}")  # Debugging statement
+
+        if score_input == "F":
+            print(f"Fault detected for player {player}. Current faults: {faults[player]}")  # Debugging faults
+        elif score_input == "0":
+            print(f"Zero input for player {player}. Current zero count: {zeros[player]}")  # Debugging zeroes
+        else:
+            print(f"Adding score for player {player}. Previous total: {scores[player][-1] if scores[player] else 0}")
+
         message = f"{player} scored {score_input}."
         messages.append(message)
 
@@ -127,7 +141,8 @@ def game():
 
                 faults[player] = 0  # Reset after 3 faults
                 return handle_next_turn()
-
+            
+            print(f"Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
             return redirect(url_for('game'))
 
         # Handle "0" for zero points
@@ -199,6 +214,7 @@ def handle_next_turn():
     global player_index, final_round_started, final_round_turns
 
     # Move to the next player
+    print(f"Moving to next turn. Current player index: {player_index}")  # Debugging player turn
     player_index = (player_index + 1) % len(players)
 
     if final_round_started:
@@ -208,6 +224,7 @@ def handle_next_turn():
         if final_round_turns >= len(players):
             return redirect(url_for('end_game'))
 
+    print(f"Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
     return redirect(url_for('game'))
 
 

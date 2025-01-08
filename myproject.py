@@ -277,6 +277,8 @@ def generate_table(players, scores, faults, zeros):
     table_html += '<thead class="table-dark">'
     table_html += '<tr><th>Name</th>'
     for player in players:
+        print(f"player: {player}, player_colors: {player_colors}") # Debug table
+
         table_html += f'<th style="background-color: {player_colors[player]}">{player}</th>'
     table_html += '</tr></thead>'
 

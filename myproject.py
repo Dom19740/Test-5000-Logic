@@ -12,6 +12,9 @@ import time
 app = Flask(__name__)
 app.secret_key = 'my_secret_key'
 
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(hours=1)
+app.config['MAX_CONTENT_LENGTH'] = None
+
 # Global variables
 players = []
 scores = {}
@@ -100,7 +103,7 @@ def setup():
 @app.route('/game', methods=['GET', 'POST'])
 def game():
     global players, scores, faults, zeros, player_index, final_round_started, final_round_turns
-
+    
     # Initialize an empty message
     message = ''
 
@@ -110,6 +113,16 @@ def game():
 
         message = f"{player} scored {score_input}."
         messages.append(message)
+
+                # Ensure player data is initialized
+        if player not in scores:
+            scores[player] = [0]  # Starting score for the player
+
+        if player not in faults:
+            faults[player] = 0  # Starting faults for the player
+
+        if player not in zeros:
+            zeros[player] = 0  # Starting zeros for the player
 
         # Handle "F" for fault
         print(score_input)
@@ -143,7 +156,7 @@ def game():
         else:
             try:
                 score = int(score_input)
-                current_total = scores[player][-1] if scores[player] else 0
+                current_total = scores.get(player, [0])[-1]  # Safely get the current total
                 new_total = current_total + score
                 scores[player].append(new_total)
                 zeros[player] = 0  # Reset zero counter on a valid score
@@ -307,4 +320,4 @@ def generate_table(players, scores, faults, zeros):
     return table_html
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0')

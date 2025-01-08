@@ -4,7 +4,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from tabulate import tabulate
 
-import random, json, logging
+import os, random, json, logging
 
 # Set up basic debug logging
 logging.basicConfig(level=logging.DEBUG)
@@ -42,6 +42,11 @@ color_options = [
     '#000',
 ]
 
+try:
+    os.remove('players.json')
+except FileNotFoundError:
+    pass
+
 
 # Function to load previous winners from file
 def load_previous_winners():
@@ -74,17 +79,27 @@ def index():
     logger.debug(f"Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
     return redirect(url_for('game'))
 
+
 @app.route('/setup', methods=['POST'])
 def setup():
     global players, scores, faults, zeros, game_started, player_index, color_options, player_colors
 
+    # Check if we are setting up the game for the first time
+    try:
+        with open('players.json', 'r') as f:
+            players = json.load(f)
+    except FileNotFoundError:
+        # If players.json does not exist, we are setting up the game for the first time
+        players = []
+    
     player_name = request.form.get('player_name').strip()
 
     if player_name:  # Add the player if a name is entered
         logger.debug(f"Adding player: {player_name}")  # Debugging statement
         players.append(player_name)
+        with open('players.json', 'w') as f:
+            json.dump(players, f)
         
-
         return render_template('setup_game.html', players=players)  # Continue adding players
     elif len(players) > 0:  # Start the game if no name is entered and there are players
         scores = {player: [] for player in players}
@@ -246,6 +261,10 @@ def end_game():
 @app.route('/reset', methods=['POST'])
 def reset():
     global players, scores, faults, zeros, game_started, messages, final_round_started, final_round_turns, player_colors, color_options
+    try:
+        os.remove('players.json')
+    except FileNotFoundError:
+        pass
     players = []
     scores = {}
     faults = {}

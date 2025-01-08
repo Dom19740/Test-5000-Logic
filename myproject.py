@@ -1,13 +1,14 @@
 # Copyright (c) 2024 dpb creative
 # This code is licensed for non-commercial use only. See LICENSE file for details.
 
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for
 from tabulate import tabulate
-from datetime import timedelta
 
-import os, random, json
-import time
+import random, json, logging
 
+# Set up basic debug logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
@@ -58,7 +59,7 @@ def load_previous_winners():
 
 # Function to save previous winners to file
 def save_winner(winner, winner_score):
-    print(f"Saving winner: {winner} with score: {winner_score}")  # Debugging winner saving
+    logger.debug(f"Saving winner: {winner} with score: {winner_score}")  # Debugging winner saving
     previous_winners = load_previous_winners()
     previous_winners.insert(0, {'name': winner, 'score': winner_score})
     with open(previous_winners_file, 'w') as f:
@@ -70,7 +71,7 @@ def index():
         previous_winners = load_previous_winners()
         return render_template('setup_game.html', previous_winners=previous_winners)
     
-    print(f"Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
+    logger.debug(f"Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
     return redirect(url_for('game'))
 
 @app.route('/setup', methods=['POST'])
@@ -80,7 +81,7 @@ def setup():
     player_name = request.form.get('player_name').strip()
 
     if player_name:  # Add the player if a name is entered
-        print(f"Adding player: {player_name}")  # Debugging statement
+        logger.debug(f"Adding player: {player_name}")  # Debugging statement
         players.append(player_name)
         
 
@@ -98,7 +99,7 @@ def setup():
 
         game_started = True
 
-        print(f"Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
+        logger.debug(f"Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
         return redirect(url_for('game'))
     else:
         # If no player names have been entered, show an error
@@ -117,14 +118,14 @@ def game():
         player = request.form['player']
         score_input = request.form.get('score').strip().upper()
 
-        print(f"Player: {player}, Score Input: {score_input}")  # Debugging statement
+        logger.debug(f"Player: {player}, Score Input: {score_input}")  # Debugging statement
 
         if score_input == "F":
-            print(f"Fault detected for player {player}. Current faults: {faults[player]}")  # Debugging faults
+            logger.debug(f"Fault detected for player {player}. Current faults: {faults[player]}")  # Debugging faults
         elif score_input == "0":
-            print(f"Zero input for player {player}. Current zero count: {zeros[player]}")  # Debugging zeroes
+            logger.debug(f"Zero input for player {player}. Current zero count: {zeros[player]}")  # Debugging zeroes
         else:
-            print(f"Adding score for player {player}. Previous total: {scores[player][-1] if scores[player] else 0}")
+            logger.debug(f"Adding score for player {player}. Previous total: {scores[player][-1] if scores[player] else 0}")
 
         message = f"{player} scored {score_input}."
         messages.append(message)
@@ -142,7 +143,7 @@ def game():
                 faults[player] = 0  # Reset after 3 faults
                 return handle_next_turn()
             
-            print(f"Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
+            logger.debug(f"Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
             return redirect(url_for('game'))
 
         # Handle "0" for zero points
@@ -214,7 +215,7 @@ def handle_next_turn():
     global player_index, final_round_started, final_round_turns
 
     # Move to the next player
-    print(f"Moving to next turn. Current player index: {player_index}")  # Debugging player turn
+    logger.debug(f"Moving to next turn. Current player index: {player_index}")  # Debugging player turn
     player_index = (player_index + 1) % len(players)
 
     if final_round_started:
@@ -224,7 +225,7 @@ def handle_next_turn():
         if final_round_turns >= len(players):
             return redirect(url_for('end_game'))
 
-    print(f"Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
+    logger.debug(f"Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
     return redirect(url_for('game'))
 
 
@@ -277,7 +278,7 @@ def generate_table(players, scores, faults, zeros):
     table_html += '<thead class="table-dark">'
     table_html += '<tr><th>Name</th>'
     for player in players:
-        print(f"player: {player}, player_colors: {player_colors}") # Debug table
+        logger.debug(f"player: {player}, player_colors: {player_colors}") # Debug table
 
         table_html += f'<th style="background-color: {player_colors[player]}">{player}</th>'
     table_html += '</tr></thead>'

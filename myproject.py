@@ -1,7 +1,7 @@
 # Copyright (c) 2024 dpb creative
 # This code is licensed for non-commercial use only. See LICENSE file for details.
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 from tabulate import tabulate
 
 import os, random, json, logging
@@ -14,7 +14,6 @@ app = Flask(__name__)
 
 # Enable debug mode in development
 app.debug = True
-
 app.secret_key = 'my_secret_key' # UPDATE FOR DEVELOPMENT, USE .ENV
 
 # Global variables
@@ -29,8 +28,6 @@ final_round_started = False
 final_round_turns = 0
 messages = []
 previous_winners_file = 'previous_winners.json'
-
-
 color_options = [
     '#ff0088',
     '#ffa07a',
@@ -42,29 +39,21 @@ color_options = [
     '#000',
 ]
 
-try:
-    os.remove('players.json')
-except FileNotFoundError:
-    pass
-
 
 # Function to load previous winners from file
 def load_previous_winners():
     try:
-        print("Loading previous winners from file...")
         with open(previous_winners_file, 'r') as f:
             return json.load(f)
     except FileNotFoundError:
-        print("Error: File not found.")
         return []
     except json.JSONDecodeError:
-        print("Error: Invalid JSON.")
         return []
 
 
 # Function to save previous winners to file
 def save_winner(winner, winner_score):
-    logger.debug(f"Saving winner: {winner} with score: {winner_score}")  # Debugging winner saving
+    logger.debug(f"SAVING WINNER: {winner} WITH SCORE: {winner_score}")  # Debugging winner saving
     previous_winners = load_previous_winners()
     previous_winners.insert(0, {'name': winner, 'score': winner_score})
     with open(previous_winners_file, 'w') as f:
@@ -76,32 +65,40 @@ def index():
         previous_winners = load_previous_winners()
         return render_template('setup_game.html', previous_winners=previous_winners)
     
-    logger.debug(f"Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
+    logger.debug(f"INDEX ROUTE: REDIRECTING to 'game'. Player turn: {player_index}")  # Debugging redirection
     return redirect(url_for('game'))
+
+
+from flask import session
+
+@app.route('/add_player', methods=['POST'])
+def add_player():
+    player_name = request.form.get('player_name').strip()
+
+    # Retrieve the players list from the session, or initialize it if it doesn't exist
+    players = session.get('players', [])
+
+    if player_name:  # If player name is provided
+        players.append(player_name)
+        session['players'] = players  # Save updated list back to session
+        
+        logger.debug(f"PLAYER ADDED: {player_name}")
+        logger.debug(f"PLAYERS: {players}")
+
+        return render_template('setup_game.html', players=players)  # Refresh page with updated player list
+    else:
+        logger.debug("No player name entered.")
+        return render_template('setup_game.html', players=players, error="Player name cannot be empty.")
+
+
 
 
 @app.route('/setup', methods=['POST'])
 def setup():
+    logger.debug(f"SETUP ROUTE STARTED")  # Debugging statement
     global players, scores, faults, zeros, game_started, player_index, color_options, player_colors
 
-    # Check if we are setting up the game for the first time
-    try:
-        with open('players.json', 'r') as f:
-            players = json.load(f)
-    except FileNotFoundError:
-        # If players.json does not exist, we are setting up the game for the first time
-        players = []
-    
-    player_name = request.form.get('player_name').strip()
-
-    if player_name:  # Add the player if a name is entered
-        logger.debug(f"Adding player: {player_name}")  # Debugging statement
-        players.append(player_name)
-        with open('players.json', 'w') as f:
-            json.dump(players, f)
-        
-        return render_template('setup_game.html', players=players)  # Continue adding players
-    elif len(players) > 0:  # Start the game if no name is entered and there are players
+    if len(players) > 0:  # Start the game if no name is entered and there are players
         scores = {player: [] for player in players}
         faults = {player: 0 for player in players}
         zeros = {player: 0 for player in players}
@@ -112,9 +109,11 @@ def setup():
             player_colors[player] = color
             color_options.remove(color)  # Remove the assigned color
 
-        game_started = True
+        logger.debug(f"PLAYER COLORS: {player_colors}")  # Debugging statement
 
-        logger.debug(f"Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
+        game_started = True
+        session['setup_completed'] = True  # Set session flag to indicate setup is completed
+
         return redirect(url_for('game'))
     else:
         # If no player names have been entered, show an error
@@ -134,13 +133,6 @@ def game():
         score_input = request.form.get('score').strip().upper()
 
         logger.debug(f"Player: {player}, Score Input: {score_input}")  # Debugging statement
-
-        if score_input == "F":
-            logger.debug(f"Fault detected for player {player}. Current faults: {faults[player]}")  # Debugging faults
-        elif score_input == "0":
-            logger.debug(f"Zero input for player {player}. Current zero count: {zeros[player]}")  # Debugging zeroes
-        else:
-            logger.debug(f"Adding score for player {player}. Previous total: {scores[player][-1] if scores[player] else 0}")
 
         message = f"{player} scored {score_input}."
         messages.append(message)
@@ -178,6 +170,9 @@ def game():
         else:
             try:
                 score = int(score_input)
+
+                logger.debug(f"player: {player}, scores: {scores}") # Debug
+
                 current_total = scores[player][-1] if scores[player] else 0
                 """ current_total = scores.get(player, [0])[-1] """
                 new_total = current_total + score
@@ -209,6 +204,8 @@ def game():
     table = generate_table(players, scores, faults, zeros)
 
     # Get the current player's name to display it in the form
+    logger.debug(f"player_index: {player_index}, players: {players}")
+
     current_player = players[player_index]
 
     return render_template('game.html',
@@ -261,10 +258,7 @@ def end_game():
 @app.route('/reset', methods=['POST'])
 def reset():
     global players, scores, faults, zeros, game_started, messages, final_round_started, final_round_turns, player_colors, color_options
-    try:
-        os.remove('players.json')
-    except FileNotFoundError:
-        pass
+
     players = []
     scores = {}
     faults = {}

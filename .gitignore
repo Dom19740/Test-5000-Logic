@@ -1,3 +1,5 @@
 .venv/
 .history/
+__pycache__/
 previous_winners.json
+players.json

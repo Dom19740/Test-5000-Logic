@@ -69,10 +69,12 @@ def index():
     return redirect(url_for('game'))
 
 
-from flask import session
 
-@app.route('/add_player', methods=['POST'])
-def add_player():
+
+@app.route('/setup', methods=['POST'])
+def setup():
+    logger.debug(f"SETUP ROUTE STARTED")  # Debugging statement
+    global players, scores, faults, zeros, game_started, player_index, color_options, player_colors
     player_name = request.form.get('player_name').strip()
 
     # Retrieve the players list from the session, or initialize it if it doesn't exist
@@ -86,22 +88,15 @@ def add_player():
         logger.debug(f"PLAYERS: {players}")
 
         return render_template('setup_game.html', players=players)  # Refresh page with updated player list
-    else:
-        logger.debug("No player name entered.")
-        return render_template('setup_game.html', players=players, error="Player name cannot be empty.")
 
-
-
-
-@app.route('/setup', methods=['POST'])
-def setup():
-    logger.debug(f"SETUP ROUTE STARTED")  # Debugging statement
-    global players, scores, faults, zeros, game_started, player_index, color_options, player_colors
-
-    if len(players) > 0:  # Start the game if no name is entered and there are players
+    elif len(players) > 0:  # Start the game if no name is entered and there are players
         scores = {player: [] for player in players}
         faults = {player: 0 for player in players}
         zeros = {player: 0 for player in players}
+        session['scores'] = scores  # Save updated list back to session
+        faults['scores'] = faults  # Save updated list back to session
+        zeros['scores'] = zeros  # Save updated list back to session
+        
         player_index = 0 
 
         for player in players:
@@ -268,6 +263,7 @@ def reset():
     messages = []
     final_round_started = False
     final_round_turns = 0
+    session.clear()
     color_options = [
     '#ff0088',
     '#ffa07a',

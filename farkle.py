@@ -187,6 +187,8 @@ def game():
                 scores[player].append(new_total)
                 zeros[player] = 0  # Reset zero counter on a valid score
 
+                logger.debug(f"player: {player}, scores after update: {scores}") # Debug
+
                 # Check if the new total exists in any other player's running totals
                 for other_player in players:
                     if other_player != player:
@@ -202,6 +204,9 @@ def game():
                     message = f"🎉 {player} has reached a score of {new_total}! Final round begins: Every player gets one more turn."
                     messages.append(message)
 
+                # Save updated scores to session
+                session['scores'] = scores
+
             except ValueError:
                 pass
 
@@ -212,7 +217,7 @@ def game():
     table = generate_table(players, scores, faults, zeros)
 
     # Get the current player's name to display it in the form
-    logger.debug(f"19.player_index: {player_index}, players: {players}")
+    logger.debug(f"player_index: {player_index}, players: {players}")
 
     current_player = players[player_index]
 
@@ -354,7 +359,6 @@ def generate_table(players, scores, faults, zeros):
             score_for_round = scores[player][round_index] if round_index < len(scores[player]) else ""
             table_html += f'<td>{score_for_round}</td>'
         table_html += '</tr>'
-
 
     # Close the table
     table_html += '</tbody></table>'

@@ -303,7 +303,12 @@ def reset():
     return redirect(url_for('index'))
 
 
-def generate_table(players, scores, faults, zeros):
+def generate_table(players, player_colors):
+    # Retrieve scores, faults, and zeros from session
+    scores = session.get('scores', {})
+    faults = session.get('faults', {})
+    zeros = session.get('zeros', {})
+
     # Find the maximum number of rounds (by the longest score list of any player)
     max_rounds = max(len(score) for score in scores.values()) if scores else 0
 

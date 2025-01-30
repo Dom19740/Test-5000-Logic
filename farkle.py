@@ -126,6 +126,7 @@ def game():
     scores = session.get('scores', {})
     faults = session.get('faults', {})
     zeros = session.get('zeros', {})
+    players = session.get('players', [])
 
     logger.debug(f"10.GAME ROUTE STARTED")  # Debugging statement
     logger.debug(f"11.PLAYERS: {players}")  # Debugging statement
@@ -231,7 +232,14 @@ def handle_next_turn():
     """
     Handles advancing to the next player's turn, including logic for the final round.
     """
-    global player_index, final_round_started, final_round_turns
+    global player_index, final_round_started, final_round_turns, players
+
+    # Debugging statement to check the state of players list
+    logger.debug(f"19b.handle_next_turn: players list: {players}")
+
+    if not players:
+        logger.error("19c.handle_next_turn: players list is empty!")
+        return redirect(url_for('setup'))
 
     # Move to the next player
     logger.debug(f"20. Moving to next turn. Current player index: {player_index}")  # Debugging player turn

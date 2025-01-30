@@ -94,8 +94,8 @@ def setup():
         faults = {player: 0 for player in players}
         zeros = {player: 0 for player in players}
         session['scores'] = scores  # Save updated list back to session
-        faults['scores'] = faults  # Save updated list back to session
-        zeros['scores'] = zeros  # Save updated list back to session
+        session['faults'] = faults  # Save updated list back to session
+        session['zeros'] = zeros  # Save updated list back to session
         
         player_index = 0 
 
@@ -113,8 +113,6 @@ def setup():
     else:
         # If no player names have been entered, show an error
         return render_template('setup_game.html', error="Please enter at least one player.")
-    
-
 
 @app.route('/game', methods=['GET', 'POST'])
 def game():
@@ -160,7 +158,6 @@ def game():
                 zeros[player] = 0
                 return handle_next_turn()
 
-
         # Handle regular score input
         else:
             try:
@@ -169,7 +166,6 @@ def game():
                 logger.debug(f"player: {player}, scores: {scores}") # Debug
 
                 current_total = scores[player][-1] if scores[player] else 0
-                """ current_total = scores.get(player, [0])[-1] """
                 new_total = current_total + score
                 scores[player].append(new_total)
                 zeros[player] = 0  # Reset zero counter on a valid score

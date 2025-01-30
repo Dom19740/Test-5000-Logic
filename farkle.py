@@ -108,6 +108,7 @@ def setup():
             player_colors[player] = color
             color_options.remove(color)  # Remove the assigned color
 
+        session['player_colors'] = player_colors  # Save player_colors to session
         logger.debug(f"PLAYER COLORS: {player_colors}")  # Debugging statement
 
         game_started = True
@@ -121,6 +122,9 @@ def setup():
 @app.route('/game', methods=['GET', 'POST'])
 def game():
     global players, scores, faults, zeros, player_index, final_round_started, final_round_turns
+    
+    # Retrieve player_colors from session
+    player_colors = session.get('player_colors', {})
     
     # Initialize an empty message
     message = ''

@@ -303,7 +303,7 @@ def reset():
     return redirect(url_for('index'))
 
 
-def generate_table(players, player_colors):
+def generate_table(players, scores, faults, zeros):
     # Retrieve scores, faults, and zeros from session
     scores = session.get('scores', {})
     faults = session.get('faults', {})

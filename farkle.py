@@ -96,6 +96,10 @@ def setup():
         session['scores'] = scores  # Save updated list back to session
         session['faults'] = faults  # Save updated list back to session
         session['zeros'] = zeros  # Save updated list back to session
+
+        logger.debug(f"SCORES: {scores}")  # Debugging statement
+        logger.debug(f"FAULTS: {faults}")  # Debugging statement
+        logger.debug(f"ZEROS: {zeros}")  # Debugging statement
         
         player_index = 0 
 

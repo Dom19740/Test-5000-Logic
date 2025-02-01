@@ -1,7 +1,7 @@
 # Copyright (c) 2024 dpb creative
 # This code is licensed for non-commercial use only. See LICENSE file for details.
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 from tabulate import tabulate
 
 import os, random, json, logging
@@ -62,6 +62,7 @@ def save_winner(winner, winner_score):
 @app.route('/')
 def index():
     if not game_started:
+        session.clear
 
         previous_winners = load_previous_winners()
         return render_template('setup_game.html', previous_winners=previous_winners)
@@ -75,9 +76,12 @@ def setup():
     global players, scores, faults, zeros, game_started, player_index, color_options, player_colors
     player_name = request.form.get('player_name').strip()
 
+    # Retrieve the players list from the session, or initialize it if it doesn't exist
+    players = session.get('players', [])
 
     if player_name:  # If player name is provided
         players.append(player_name)
+        session['players'] = players  # Save updated list back to session
         
         logger.debug(f"4. PLAYER ADDED: {player_name}")
         logger.debug(f"5. PLAYERS: {players}")
@@ -89,6 +93,11 @@ def setup():
         faults = {player: 0 for player in players}
         zeros = {player: 0 for player in players}
         player_colors = {}  # Initialize player_colors dictionary
+        session['scores'] = scores  # Save updated list back to session
+        session['faults'] = faults  # Save updated list back to session
+        session['zeros'] = zeros  # Save updated list back to session
+        session['players'] = players  # Ensure players list is saved to session
+
         
         logger.debug(f"6.SCORES: {scores}")  # Debugging statement
         logger.debug(f"7.FAULTS: {faults}")  # Debugging statement
@@ -101,9 +110,11 @@ def setup():
             player_colors[player] = color
             color_options.remove(color)  # Remove the assigned color
 
+        session['player_colors'] = player_colors  # Save player_colors to session
         logger.debug(f"9.PLAYER COLORS: {player_colors}")  # Debugging statement
 
         game_started = True
+        session['setup_completed'] = True  # Set session flag to indicate setup is completed
 
         return redirect(url_for('game'))
     else:
@@ -114,6 +125,15 @@ def setup():
 def game():
     global player_index, final_round_started, final_round_turns, player_colors
     
+    # Retrieve data from session
+    scores = session.get('scores', {})
+    faults = session.get('faults', {})
+    zeros = session.get('zeros', {})
+    players = session.get('players', [])
+    player_colors = session.get('player_colors', {})
+    player_index = session.get('player_index', 0)
+    messages = session.get('messages', [])
+
     logger.debug(f"10.GAME ROUTE STARTED")  # Debugging statement
     logger.debug(f"11.PLAYERS: {players}")  # Debugging statement
     logger.debug(f"12.SCORES: {scores}")  # Debugging statement
@@ -143,6 +163,8 @@ def game():
                 faults[player] = 0  # Reset after 3 faults
                 return handle_next_turn()
             
+            session['F'] = faults  # Save updated zeros back to session
+            session['messages'] = messages  # Save updated messages back to session
             logger.debug(f"Updated ZEROS: {zeros}")  # Debugging statement
             logger.debug(f"17.Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
             return redirect(url_for('game'))
@@ -156,8 +178,12 @@ def game():
 
                 if scores[player]:
                     scores[player].pop()  # Remove last score if 3 zeros
+                    session['zeros'] = zeros
                 zeros[player] = 0
                 return handle_next_turn()
+            session['zeros'] = zeros  # Save updated zeros back to session
+            session['messages'] = messages  # Save updated messages back to session
+
 
         # Handle regular score input
         else:
@@ -187,6 +213,9 @@ def game():
                     final_round_started = True
                     message = f"🎉 {player} has reached a score of {new_total}! Final round begins: Every player gets one more turn."
                     messages.append(message)
+
+                # Save updated scores to session
+                session['scores'] = scores
 
             except ValueError:
                 pass
@@ -219,6 +248,7 @@ def handle_next_turn():
     Handles advancing to the next player's turn, including logic for the final round.
     """
     global player_index, final_round_started, final_round_turns, players
+    players = session.get('players', [])
 
     # Debugging statement to check the state of players list
     logger.debug(f"19b.handle_next_turn: players list: {players}")
@@ -230,6 +260,7 @@ def handle_next_turn():
     # Move to the next player
     logger.debug(f"20. Moving to next turn. Current player index: {player_index}")  # Debugging player turn
     player_index = (player_index + 1) % len(players)
+    session['player_index'] = player_index
 
     if final_round_started:
         final_round_turns += 1
@@ -269,6 +300,7 @@ def reset():
     messages = []
     final_round_started = False
     final_round_turns = 0
+    session.clear()
     color_options = [
     '#ff0088',
     '#ffa07a',
@@ -284,6 +316,12 @@ def reset():
 
 
 def generate_table(players, scores, faults, zeros):
+    # Retrieve scores, faults, and zeros from session
+    players = session.get('players', [])
+    scores = session.get('scores', {})
+    faults = session.get('faults', {})
+    zeros = session.get('zeros', {})
+
     # Find the maximum number of rounds (by the longest score list of any player)
     max_rounds = max(len(score) for score in scores.values()) if scores else 0
 

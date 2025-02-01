@@ -121,7 +121,7 @@ def setup():
 
 @app.route('/game', methods=['GET', 'POST'])
 def game():
-    global players, scores, faults, zeros, player_index, final_round_started, final_round_turns, player_colors
+    global player_index, final_round_started, final_round_turns
     
     # Retrieve data from session
     player_colors = session.get('player_colors', {})
@@ -141,16 +141,13 @@ def game():
     message = ''
 
     if request.method == 'POST':
-        player = request.form['player']
+        player = players[player_index]
         score_input = request.form.get('score').strip().upper()
 
         logger.debug(f"16.Player: {player}, Score Input: {score_input}")  # Debugging statement
 
         message = f"{player} scored {score_input}."
         messages.append(message)
-
-        # Handle "F" for fault
-        print(score_input)
 
         if score_input == "F":
             faults[player] += 1
@@ -162,6 +159,8 @@ def game():
                 faults[player] = 0  # Reset after 3 faults
                 return handle_next_turn()
             
+            session['F'] = faults  # Save updated zeros back to session
+            logger.debug(f"Updated ZEROS: {zeros}")  # Debugging statement
             logger.debug(f"17.Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
             return redirect(url_for('game'))
 
@@ -174,8 +173,10 @@ def game():
 
                 if scores[player]:
                     scores[player].pop()  # Remove last score if 3 zeros
+                    session['zeros'] = zeros
                 zeros[player] = 0
                 return handle_next_turn()
+            session['zeros'] = zeros  # Save updated zeros back to session
 
         # Handle regular score input
         else:

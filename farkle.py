@@ -124,11 +124,12 @@ def game():
     global player_index, final_round_started, final_round_turns, player_colors
     
     # Retrieve data from session
-    player_colors = session.get('player_colors', {})
     scores = session.get('scores', {})
     faults = session.get('faults', {})
     zeros = session.get('zeros', {})
     players = session.get('players', [])
+    player_colors = session.get('player_colors', {})
+    player_index = session.get('player_index', 0)
 
     logger.debug(f"10.GAME ROUTE STARTED")  # Debugging statement
     logger.debug(f"11.PLAYERS: {players}")  # Debugging statement
@@ -242,6 +243,8 @@ def handle_next_turn():
     """
     global player_index, final_round_started, final_round_turns, players
 
+    player_index = session.get('player_index', 0)
+
     # Debugging statement to check the state of players list
     logger.debug(f"19b.handle_next_turn: players list: {players}")
 
@@ -252,6 +255,7 @@ def handle_next_turn():
     # Move to the next player
     logger.debug(f"20. Moving to next turn. Current player index: {player_index}")  # Debugging player turn
     player_index = (player_index + 1) % len(players)
+    session['player_index'] = player_index
 
     if final_round_started:
         final_round_turns += 1

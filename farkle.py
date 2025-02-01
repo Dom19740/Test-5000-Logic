@@ -62,7 +62,7 @@ def save_winner(winner, winner_score):
 @app.route('/')
 def index():
     if not game_started:
-        #session.clear()
+        session.clear
 
         previous_winners = load_previous_winners()
         return render_template('setup_game.html', previous_winners=previous_winners)
@@ -77,11 +77,11 @@ def setup():
     player_name = request.form.get('player_name').strip()
 
     # Retrieve the players list from the session, or initialize it if it doesn't exist
-    #players = session.get('players', [])
+    players = session.get('players', [])
 
     if player_name:  # If player name is provided
         players.append(player_name)
-        #session['players'] = players  # Save updated list back to session
+        session['players'] = players  # Save updated list back to session
         
         logger.debug(f"4. PLAYER ADDED: {player_name}")
         logger.debug(f"5. PLAYERS: {players}")
@@ -93,9 +93,9 @@ def setup():
         faults = {player: 0 for player in players}
         zeros = {player: 0 for player in players}
         player_colors = {}  # Initialize player_colors dictionary
-        #session['scores'] = scores  # Save updated list back to session
-        #session['faults'] = faults  # Save updated list back to session
-        #session['zeros'] = zeros  # Save updated list back to session
+        session['scores'] = scores  # Save updated list back to session
+        session['faults'] = faults  # Save updated list back to session
+        session['zeros'] = zeros  # Save updated list back to session
         
         logger.debug(f"6.SCORES: {scores}")  # Debugging statement
         logger.debug(f"7.FAULTS: {faults}")  # Debugging statement
@@ -108,11 +108,11 @@ def setup():
             player_colors[player] = color
             color_options.remove(color)  # Remove the assigned color
 
-        #session['player_colors'] = player_colors  # Save player_colors to session
+        session['player_colors'] = player_colors  # Save player_colors to session
         logger.debug(f"9.PLAYER COLORS: {player_colors}")  # Debugging statement
 
         game_started = True
-        #session['setup_completed'] = True  # Set session flag to indicate setup is completed
+        session['setup_completed'] = True  # Set session flag to indicate setup is completed
 
         return redirect(url_for('game'))
     else:
@@ -121,14 +121,14 @@ def setup():
 
 @app.route('/game', methods=['GET', 'POST'])
 def game():
-    global player_index, final_round_started, final_round_turns, player_colors
+    global players, scores, faults, zeros, player_index, final_round_started, final_round_turns, player_colors
     
     # Retrieve data from session
-    #player_colors = session.get('player_colors', {})
-    #scores = session.get('scores', {})
-    #faults = session.get('faults', {})
-    #zeros = session.get('zeros', {})
-    #players = session.get('players', [])
+    player_colors = session.get('player_colors', {})
+    scores = session.get('scores', {})
+    faults = session.get('faults', {})
+    zeros = session.get('zeros', {})
+    players = session.get('players', [])
 
     logger.debug(f"10.GAME ROUTE STARTED")  # Debugging statement
     logger.debug(f"11.PLAYERS: {players}")  # Debugging statement
@@ -207,7 +207,7 @@ def game():
                     messages.append(message)
 
                 # Save updated scores to session
-                #session['scores'] = scores
+                session['scores'] = scores
 
             except ValueError:
                 pass
@@ -290,7 +290,7 @@ def reset():
     messages = []
     final_round_started = False
     final_round_turns = 0
-    #session.clear()
+    session.clear()
     color_options = [
     '#ff0088',
     '#ffa07a',
@@ -307,10 +307,10 @@ def reset():
 
 def generate_table(players, scores, faults, zeros):
     # Retrieve scores, faults, and zeros from session
-    #players = session.get('players', [])
-    #scores = session.get('scores', {})
-    #faults = session.get('faults', {})
-    #zeros = session.get('zeros', {})
+    players = session.get('players', [])
+    scores = session.get('scores', {})
+    faults = session.get('faults', {})
+    zeros = session.get('zeros', {})
 
     # Find the maximum number of rounds (by the longest score list of any player)
     max_rounds = max(len(score) for score in scores.values()) if scores else 0

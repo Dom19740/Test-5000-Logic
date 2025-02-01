@@ -84,7 +84,8 @@
                         <h2 class="text-center card-title">Game Log</h2>
                         <ul class="list-group">
                             {% for message in messages|reverse %}
-                                <li class="list-group-item">{{ message }}</li>
+                            {% set player = message.split()[0] %}
+                                <li class="list-group-item" style="color: white; background: {{ player_colors[player] }}">{{ message }}</li>
                             {% endfor %}
                         </ul>
 

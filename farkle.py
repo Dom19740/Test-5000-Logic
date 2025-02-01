@@ -29,14 +29,14 @@ final_round_turns = 0
 messages = []
 previous_winners_file = 'previous_winners.json'
 color_options = [
-    '#ff0088',
+    '#cf2a33',
     '#ffa07a',
     '#ffd500',
     '#34c760',
     '#00c3ff',
     '#6c5ce7',
     '#9824aa',
-    '#000',
+    '#cf33ab',
 ]
 
 
@@ -137,7 +137,7 @@ def game():
             faults[player] += 1
 
             if faults[player] == 3:
-                message = f"🚫  Fault Warning: {player} has 3 faults! Moving to next player."
+                message = f"{player} 🚫  3 faults - Moving to next player."
                 messages.append(message)
 
                 faults[player] = 0  # Reset after 3 faults
@@ -151,7 +151,7 @@ def game():
         elif score_input == "0" or score_input is None or score_input.strip() == "":
             zeros[player] += 1
             if zeros[player] == 3:
-                message = f"⚠️  Zero Penalty: {player} loses their last score."
+                message = f"{player} ⚠️  Zero Penalty - Lose last score."
                 messages.append(message)
 
                 if scores[player]:
@@ -178,14 +178,14 @@ def game():
                     if other_player != player:
                         if new_total in scores[other_player]:
                             scores[other_player].remove(new_total)  # Remove the exact match
-                            message = f"⚠️  {new_total} is already a total for {other_player}, removing their score!"
+                            message = f"{other_player} ⚠️  has score {new_total}, removing their score!"
                             messages.append(message)
                             break  # Exit the loop once the total is found and reverted
 
                 # Check if the player has reached or exceeded 5000 points
                 if new_total >= 5000 and not final_round_started:
                     final_round_started = True
-                    message = f"🎉 {player} has reached a score of {new_total}! Final round begins: Every player gets one more turn."
+                    message = f"{player} has reached a score of {new_total} 🎉! Final round begins: Every player gets one more turn."
                     messages.append(message)
 
             except ValueError:

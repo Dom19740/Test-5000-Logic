@@ -121,7 +121,7 @@ def setup():
 
 @app.route('/game', methods=['GET', 'POST'])
 def game():
-    global player_index, final_round_started, final_round_turns
+    global player_index, final_round_started, final_round_turns, player_colors
     
     # Retrieve data from session
     player_colors = session.get('player_colors', {})

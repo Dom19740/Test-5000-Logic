@@ -40,7 +40,6 @@ def load_previous_winners():
 
 # Function to save previous winners to file
 def save_winner(winner, winner_score):
-    #logger.debug(f"1. SAVING WINNER: {winner} WITH SCORE: {winner_score}")  # Debugging winner saving
     previous_winners = load_previous_winners()
     previous_winners.insert(0, {'name': winner, 'score': winner_score})
     with open(previous_winners_file, 'w') as f:
@@ -52,12 +51,10 @@ def index():
         previous_winners = load_previous_winners()
         return render_template('setup_game.html', previous_winners=previous_winners)
     
-    #logger.debug(f"2. INDEX ROUTE: REDIRECTING to 'game'. Player turn: {session.get('player_index', 0)}")  # Debugging redirection
     return redirect(url_for('game'))
 
 @app.route('/setup', methods=['POST'])
 def setup():
-    #logger.debug(f"3. SETUP ROUTE STARTED")  # Debugging statement
     global color_options
     player_name = request.form.get('player_name').strip()
 
@@ -73,8 +70,7 @@ def setup():
         session['final_round_started'] = False
         session['final_round_turns'] = 0
         session['messages'] = []
-        #logger.debug(f"3. COLOR OPTIONS {color_options}")  # Debugging statement
-        session['color_options'] = color_options.copy()
+        session['color_options'] = color_options
 
     players = session['players']
     scores = session['scores']
@@ -92,9 +88,6 @@ def setup():
         players.append(player_name)
         session['players'] = players  # Save updated list back to session
         
-        #logger.debug(f"4. PLAYER ADDED: {player_name}")
-        #logger.debug(f"5. PLAYERS: {players}")
-
         return render_template('setup_game.html', players=players)  # Refresh page with updated player list
 
     elif len(players) > 0:  # Start the game if no name is entered and there are players
@@ -102,10 +95,6 @@ def setup():
         faults = {player: 0 for player in players}
         zeros = {player: 0 for player in players}
         player_colors = {}  # Initialize player_colors dictionary
-        
-        #logger.debug(f"6.SCORES: {scores}")  # Debugging statement
-        #logger.debug(f"7.FAULTS: {faults}")  # Debugging statement
-        #logger.debug(f"8.ZEROS: {zeros}")  # Debugging statement
 
         player_index = 0 
 
@@ -113,8 +102,6 @@ def setup():
             color = random.choice(color_options)
             player_colors[player] = color
             color_options.remove(color)  # Remove the assigned color
-
-        #logger.debug(f"9.PLAYER COLORS: {player_colors}")  # Debugging statement
 
         game_started = True
 
@@ -146,21 +133,12 @@ def game():
     final_round_turns = session.get('final_round_turns', 0)
     messages = session.get('messages', [])
 
-    #logger.debug(f"10.GAME ROUTE STARTED")  # Debugging statement
-    #logger.debug(f"11.PLAYERS: {players}")  # Debugging statement
-    #logger.debug(f"12.SCORES: {scores}")  # Debugging statement
-    #logger.debug(f"13.FAULTS: {faults}")  # Debugging statement
-    #logger.debug(f"14.ZEROS: {zeros}")  # Debugging statement
-    #logger.debug(f"15.PLAYER COLORS: {player_colors}")  # Debugging statement
-
     # Initialize an empty message
     message = ''
 
     if request.method == 'POST':
         player = players[player_index]
         score_input = request.form.get('score').strip().upper()
-
-        #logger.debug(f"16.Player: {player}, Score Input: {score_input}")  # Debugging statement
 
         message = f"{player} scored {score_input}."
         messages.append(message)
@@ -177,8 +155,7 @@ def game():
             
             session['faults'] = faults  # Save updated faults back to session
             session['messages'] = messages  # Save updated messages back to session
-            #logger.debug(f"Updated ZEROS: {zeros}")  # Debugging statement
-            #logger.debug(f"17.Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
+
             return redirect(url_for('game'))
 
         # Handle "0" for zero points
@@ -200,14 +177,10 @@ def game():
             try:
                 score = int(score_input)
 
-                #logger.debug(f"18.player: {player}, scores: {scores}") # Debug
-
                 current_total = scores[player][-1] if scores[player] else 0
                 new_total = current_total + score
                 scores[player].append(new_total)
                 zeros[player] = 0  # Reset zero counter on a valid score
-
-                #logger.debug(f"player: {player}, scores after update: {scores}") # Debug
 
                 # Check if the new total exists in any other player's running totals
                 for other_player in players:
@@ -237,9 +210,6 @@ def game():
     # Generate the score table as a string
     table = generate_table(players, scores, faults, zeros)
 
-    # Get the current player's name to display it in the form
-    logger.debug(f"player_index: {player_index}, players: {players}")
-
     current_player = players[player_index]
 
     return render_template('game.html',
@@ -263,15 +233,10 @@ def handle_next_turn():
     final_round_started = session.get('final_round_started', False)
     final_round_turns = session.get('final_round_turns', 0)
 
-    # Debugging statement to check the state of players list
-    #logger.debug(f"19b.handle_next_turn: players list: {players}")
-
     if not players:
-        #logger.error("19c.handle_next_turn: players list is empty!")
         return redirect(url_for('setup'))
 
     # Move to the next player
-    #logger.debug(f"20. Moving to next turn. Current player index: {player_index}")  # Debugging player turn
     player_index = (player_index + 1) % len(players)
     session['player_index'] = player_index
 
@@ -283,7 +248,6 @@ def handle_next_turn():
         if final_round_turns >= len(players):
             return redirect(url_for('end_game'))
 
-    #logger.debug(f"21. Redirecting to 'game'. Player turn: {player_index}")  # Debugging redirection
     return redirect(url_for('game'))
 
 @app.route('/end_game', methods=['GET'])
@@ -328,8 +292,6 @@ def generate_table(players, scores, faults, zeros):
     table_html += '<thead class="table-dark">'
     table_html += '<tr><th>Name</th>'
     for player in players:
-        logger.debug(f"22. player: {player}, player_colors: {player_colors}") # Debug table
-
         table_html += f'<th style="background-color: {player_colors[player]}">{player}</th>'
     table_html += '</tr></thead>'
 

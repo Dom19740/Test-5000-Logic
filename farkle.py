@@ -79,9 +79,6 @@ def setup():
     player_colors = session['player_colors']
     player_index = session['player_index']
     game_started = session['game_started']
-    final_round_started = session['final_round_started']
-    final_round_turns = session['final_round_turns']
-    messages = session['messages']
     color_options = session['color_options']
 
     if player_name:  # If player name is provided
@@ -128,9 +125,7 @@ def game():
     zeros = session.get('zeros', {})
     player_colors = session.get('player_colors', {})
     player_index = session.get('player_index', 0)
-    game_started = session.get('game_started', False)
     final_round_started = session.get('final_round_started', False)
-    final_round_turns = session.get('final_round_turns', 0)
     messages = session.get('messages', [])
 
     # Initialize an empty message

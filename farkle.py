@@ -26,6 +26,8 @@ color_options = [
     '#6c5ce7',
     '#9824aa',
     '#cf33ab',
+	'#8ae742',
+	'#2adfd3',
 ]
 
 # Function to load previous winners from file
@@ -82,6 +84,8 @@ def setup():
     color_options = session['color_options']
 
     if player_name:  # If player name is provided
+        if len(players) >= 8:
+            return render_template('setup_game.html', players=players, error="Maximum of 8 players allowed.")
         players.append(player_name)
         session['players'] = players  # Save updated list back to session
         
@@ -114,7 +118,7 @@ def setup():
         return redirect(url_for('game'))
     else:
         # If no player names have been entered, show an error
-        return render_template('setup_game.html', error="Please enter at least one player.")
+        return render_template('setup_game.html', error="Please enter at least two players.")
 
 @app.route('/game', methods=['GET', 'POST'])
 def game():

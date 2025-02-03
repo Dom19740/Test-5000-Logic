@@ -17,7 +17,7 @@ The app was built in **1 day**, transitioning from a plain Python implementation
 
 ## Usage
 
-https://test-5000-logic.onrender.com/
+https://5000.dpbcreative.com/
 
 ---
 

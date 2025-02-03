@@ -224,8 +224,9 @@ def game():
                     message = f"{player} has reached a score of {new_total} 🎉! Final round begins: Every player gets one more turn."
                     messages.append(message)
 
-                # Save updated scores to session
+                # Save updated to session
                 session['scores'] = scores
+                session['final_round_started'] = final_round_started
 
             except ValueError:
                 pass
